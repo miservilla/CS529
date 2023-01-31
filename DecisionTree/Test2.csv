@@ -1,0 +1,6 @@
+Outlook,Temperature,Humidity,Wind,S_target
+Sunny,Hot,High,Weak,0
+Sunny,Hot,High,Strong,0
+Sunny,Mild,High,Weak,0
+Sunny,Cool,Normal,Weak,1
+Sunny,Mild,Normal,Strong,1
