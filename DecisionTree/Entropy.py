@@ -11,6 +11,6 @@ def entropy(a):
   #print(p2)
   return -(p1 * (np.log2(p1))) - (p2 * (np.log2(p2)))
 
-a = [0, 1]
+a = [4, 6]
 
-entropy(a)
+print(entropy(a))
