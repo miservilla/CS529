@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
 s_target = LabelEncoder()
-S = pd.read_csv('quiz2.csv')
+S = pd.read_csv('/home/michaelservilla/CS529/DecisionTree/Test.csv')
 
 def entropy(a):
   a_total = a[0] + a[1]
@@ -86,10 +86,10 @@ def gini_impurity(attribute, S):
   print("Gini Impurity(S,%s) =" % (col_names[attribute]), S_impurity)
 
 #Define target
-S['S_target'] = s_target.fit_transform(S['class'])
+S['S_target'] = s_target.fit_transform(S['PlayTennis'])
 
 #Drop any columns not needed.
-S.drop(['class'],axis=1, inplace=True)
+S.drop(['Day', 'PlayTennis'],axis=1, inplace=True)
 # S.drop(['class'], axis=1, inplace=True)
 
 #Set target attribute and value.
@@ -105,13 +105,25 @@ for i in range(len(S.columns)-1):
 
 for i in range(len(S.columns)-1):
   gini_impurity(i, S)
-# S1 = S.loc[S['Outlook'] == ('Sunny')]
-# print(S1)
 
-# S_target = S1.iloc[:, len(S.columns)-1]
-# target = S_target.value_counts()
-# target = [target.loc[0], target.loc[1]]
-# print(target)
+S1 = S.loc[S['Outlook'] == ('Sunny')]
+print(S1)
 
-# for i in range(len(S1.columns)-1):
-#   gain(i, S1)
+S_target = S1.iloc[:, len(S.columns)-1]
+target = S_target.value_counts()
+target = [target.loc[0], target.loc[1]]
+print(target)
+
+for i in range(len(S1.columns)-1):
+  gain(i, S1)
+
+S2 = S.loc[S['Outlook'] == ('Rain')]
+print(S2)
+
+S_target = S2.iloc[:, len(S.columns)-1]
+target = S_target.value_counts()
+target = [target.loc[0], target.loc[1]]
+print(target)
+
+for i in range(len(S2.columns)-1):
+  gain(i, S2)

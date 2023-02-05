@@ -4,7 +4,7 @@ import Tree
 from sklearn.preprocessing import LabelEncoder
 
 # df = pd.read_csv('Project1:RandomForests/data/Training.csv')
-df = pd.read_csv('DecisionTree/Test.csv')
+df = pd.read_csv('/home/michaelservilla/CS529/DecisionTree/Test.csv')
 
 attributes = list(df.columns.values)
 del attributes[:1]
