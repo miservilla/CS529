@@ -20,6 +20,17 @@ def gini(a):
     return 1 - p
 
 
+def chi(attribute):
+    att_total = len(attribute)
+    print(att_total)
+    print(attribute.iloc[:, att_total - 1])
+    print(attribute)
+    # att_unique = S.groupby(
+    #     S.columns[attribute]).size().reset_index(name="Count")
+    # print(att_unique)
+
+
+
 def gain(attribute, S):
   SGB1 = S.groupby(S.columns[attribute]).size(
   ).reset_index(name="Count")  # total count
@@ -127,3 +138,4 @@ print(target)
 
 for i in range(len(S2.columns)-1):
   gain(i, S2)
+  

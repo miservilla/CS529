@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import Tree
 from sklearn.preprocessing import LabelEncoder
+import scipy
 
 # df = pd.read_csv('Project1:RandomForests/data/Training.csv')
 df = pd.read_csv('/home/michaelservilla/CS529/DecisionTree/Test.csv')
@@ -79,6 +80,18 @@ def IG_gini(attribute, labels: list, df, tc):
     return IG
 
 
+def chi(p, a, CI):
+    cv = scipy.stats.chi2.ppf(CI, len(a) - 1)
+    dfree = len(a) - 1
+    c = 0
+    p_tot = p[0] + p[1]
+    for i in a:
+        a_tot = i[0] + i[1]
+        a_exp0 = a_tot * (p[0] / p_tot)
+        a_exp1 = a_tot * (p[1] / p_tot)
+        c += np.square(i[0] - a_exp0) / a_exp0 + \
+            np.square(i[1] - a_exp1) / a_exp1
+    return(c > cv)
 
 
 def build_DT(attributes, df, DT_type, parent) -> Tree.DTree:
