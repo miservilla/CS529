@@ -4,19 +4,35 @@ import Tree
 from sklearn.preprocessing import LabelEncoder
 import scipy
 
-# df = pd.read_csv('Project1:RandomForests/data/Training.csv')
-df = pd.read_csv('/home/michaelservilla/CS529/DecisionTree/Test.csv')
 
+df = pd.read_csv('DecisionTree/Test.csv') # Training data set
+df_testing = pd.read_csv('DecisionTree/Test_testing.csv') # Testing data set
+
+
+# Removing column names that aren't attributes from training set
 attributes = list(df.columns.values)
 del attributes[:1]
-del attributes[4:] # removing columns that aren't attributes 
+del attributes[4:]  
 # print(attributes)
 
+# Setting binary target column from provided target column 
 target = LabelEncoder()
-df['target'] = target.fit_transform(df['PlayTennis']) #Use whatever lable target is under
+df['target'] = target.fit_transform(df['PlayTennis'])
 # print(df['target'])
 
-def entropy(a): # This entropy assumes a binary target
+def build_binary_value_list(value_count) -> list:
+    count = []
+    try:
+        count.append(value_count[1])
+    except:
+        count.append(0)
+    try:
+        count.append(value_count[0])
+    except:
+        count.append(0)
+    return count
+
+def entropy(a): 
   a_total = a[0] + a[1]
   #print(a_total)
   p1 = (a[0] / a_total)
@@ -31,23 +47,12 @@ def entropy(a): # This entropy assumes a binary target
 def IG_entropy(attribute, labels: list, df, tc):
     IG = entropy(tc)
     total = df.shape[0]
-
     for label in labels:
         babyFrame = df.loc[df[attribute] == label]
         babytotal = babyFrame.shape[0]
         ltc = babyFrame['target'].value_counts()
-        count = []
-        try:
-            count.append(ltc[1])
-        except:
-            count.append(0)
-        try:
-            count.append(ltc[0])
-        except:
-            count.append(0)
-
+        count = build_binary_value_list(ltc)
         IG = IG - ((babytotal/total)*entropy(count))
-
     return IG
 
 def gini(a):
@@ -60,25 +65,13 @@ def gini(a):
 def IG_gini(attribute, labels: list, df, tc):
     IG = gini(tc)
     total = df.shape[0]
-
     for label in labels:
         babyFrame = df.loc[df[attribute] == label]
         babytotal = babyFrame.shape[0]
         ltc = babyFrame['target'].value_counts()
-        count = []
-        try:
-            count.append(ltc[1])
-        except:
-            count.append(0)
-        try:
-            count.append(ltc[0])
-        except:
-            count.append(0)
-
+        count = build_binary_value_list(ltc)
         IG = IG - ((babytotal/total)*gini(count))
-
     return IG
-
 
 def chi(p, a, CI):
     cv = scipy.stats.chi2.ppf(CI, len(a) - 1)
@@ -93,8 +86,20 @@ def chi(p, a, CI):
             np.square(i[1] - a_exp1) / a_exp1
     return(c > cv)
 
+def chi_info_finder(attribute, df, labels):
+    parent_vc = df['target'].value_counts()
+    parent_count = build_binary_value_list(parent_vc)
+    label_counts = []
+    for label in labels:
+        babyFrame = df.loc[df[attribute] == label]
+        ltc = babyFrame['target'].value_counts()
+        count = build_binary_value_list(ltc)
+        label_counts.append(count)
+    # print(parent_count, label_counts)
+    return chi(parent_count, label_counts, 0.95)
 
-def build_DT(attributes, df, DT_type, parent) -> Tree.DTree:
+
+def build_binary_DT(attributes, df, DT_type, parent) -> Tree.DTree:
 
     if len(df['target'].unique()) == 1: 
         # print("Single Value: returning LEAF of " + str(df['target'].unique()[0]))
@@ -109,7 +114,6 @@ def build_DT(attributes, df, DT_type, parent) -> Tree.DTree:
             # print("No more attributes: returning LEAF of " + str(1))
             return Tree.DTree({'Parent_Branch':parent,'Leaf': 1},None, True)
         
-
     highest = 0
     highest_att = ""
 
@@ -130,12 +134,14 @@ def build_DT(attributes, df, DT_type, parent) -> Tree.DTree:
 
         if DT_type == "entropy":
            IG = IG_entropy(attribute, labels, df, target_count)
+           chi2 = chi_info_finder(attribute, df, labels)
            if IG > highest:
             highest = IG
             highest_att = attribute
 
         elif DT_type == "gini":
             IG = IG_gini(attribute, labels, df, target_count)
+            chi2 = chi_info_finder(attribute, df, labels)
             if IG > highest:
                 highest = IG
                 highest_att = attribute
@@ -151,9 +157,9 @@ def build_DT(attributes, df, DT_type, parent) -> Tree.DTree:
 
     for label in highest_labels:
         sub_df = df.loc[df[highest_att] == label]
-        # print("Going down branch " + label)
+        # print("Going down branch " + str(label))
         # print(sub_df)
-        lower_branch.append(build_DT(attributes, sub_df, DT_type, label))
+        lower_branch.append(build_binary_DT(attributes, sub_df, DT_type, label))
 
     dic = {}
     dic['Parent_Branch'] = parent
@@ -171,12 +177,31 @@ def print_tree(tree: Tree.DTree, level:int):
     for branch in tree.attributes:
         print_tree(branch, level+1)
 
-    return
-        
-     
+def traverse_tree(tree: Tree.DTree, iter):
+    if not tree.isLeaf:
+        current_att = tree.node['Attribute']
+        iter_att_label = iter[current_att]
+        # print(iter_att_label)
+        for branch in tree.attributes:
+            if branch.node['Parent_Branch'] == iter_att_label:
+                return traverse_tree(branch, iter)
+    else:
+        return tree.node['Leaf']
 
-# entropy_Tree = build_DT(attributes, df, "entropy", "root")
+        
+def predict(tree: Tree.DTree, testing):
+    predictions = []
+    for i in range(len(testing)):
+        # print("Showing attributes for row " + str(i) + "**********************")
+        # print(testing.iloc[i])
+        predictions.append(traverse_tree(tree, testing.iloc[i]))
+    print(predictions)
+    return predictions
+
+
+# entropy_Tree = build_binary_DT(attributes, df, "entropy", "root")
 # print_tree(entropy_Tree, 1)
 
-gini_Tree = build_DT(attributes, df, "gini", "root")
-print_tree(gini_Tree, 1)
+gini_Tree = build_binary_DT(attributes, df, "gini", "root")
+# print_tree(gini_Tree, 1)
+predict(gini_Tree, df_testing)

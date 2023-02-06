@@ -1,0 +1,15 @@
+Day,Outlook,Temperature,Humidity,Wind
+Dl,Sunny,Hot,High,Weak
+D2,Sunny,Hot,High,Strong
+D3,Overcast,Hot,High,Weak
+D4,Rain,Mild,High,Weak
+D5,Rain,Cool,Normal,Weak
+D6,Rain,Cool,Normal,Strong
+D7,Overcast,Cool,Normal,Strong
+D8,Sunny,Mild,High,Weak
+D9,Sunny,Cool,Normal,Weak
+Dl0,Rain,Mild,Normal,Weak
+Dl1,Sunny,Mild,Normal,Strong
+Dl2,Overcast,Mild,High,Strong
+Dl3,Overcast,Hot,Normal,Weak
+Dl4,Rain,Mild,High,Strong
