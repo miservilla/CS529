@@ -14,13 +14,14 @@ def chi(p, a, CI):
         a_exp1 = a_tot * (p[1] / p_tot)
         c += np.square(i[0] - a_exp0) / a_exp0 + \
         np.square(i[1] - a_exp1) / a_exp1
+        print(c)
     print(c)
     print(cv)
     print(c > cv)
 
 
-p = [9, 5]
-a = [[6, 2], [3, 3]]
+p = [2, 3]
+a = [[0, 2], [1, 1], [1, 0]]
 CI =  0.95
 chi(p, a, CI)
     
