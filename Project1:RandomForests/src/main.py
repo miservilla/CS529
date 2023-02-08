@@ -6,9 +6,9 @@ import scipy
 
 
 # Training data set
-df = pd.read_csv('/home/michaelservilla/CS529/DecisionTree/Test.csv')
+df = pd.read_csv('/home/sin_nombre/CS529/DecisionTree/Test.csv')
 df_testing = pd.read_csv(
-    '/home/michaelservilla/CS529/DecisionTree/Test_testing.csv')  # Testing data set
+    '/home/sin_nombre/CS529/DecisionTree/Test_testing.csv')  # Testing data set
 
 
 # Removing column names that aren't attributes from training set
