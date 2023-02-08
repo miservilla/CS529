@@ -2,24 +2,36 @@ import pandas as pd
 import numpy as np
 import Tree
 from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 import scipy
 
 
 # Training data set
-df = pd.read_csv('/home/sin_nombre/CS529/DecisionTree/Test.csv')
-df_testing = pd.read_csv(
-    '/home/sin_nombre/CS529/DecisionTree/Test_testing.csv')  # Testing data set
-
+df = pd.read_csv('Project1:RandomForests/src/bill_authentication.csv')
+print(df.shape)
+df, df_testing = train_test_split(df, test_size=0.2)
+# df_testing = pd.read_csv('DecisionTree/Test.csv')  # Testing data set
+df_testing = df_testing.sample(frac=1).reset_index(drop=True)
+print(df_testing)
 
 # Removing column names that aren't attributes from training set
 attributes = list(df.columns.values)
 del attributes[:1]
-del attributes[4:]  
+# del attributes[4:]  
 # print(attributes)
 
 # Setting binary target column from provided target column 
 target = LabelEncoder()
-df['target'] = target.fit_transform(df['PlayTennis'])
+df['target'] = target.fit_transform(df['Class'])
+print(df_testing)
+df_testing['test_target'] = target.fit_transform(df_testing['Class'])
+# print(df_testing)
+testing = df_testing[['test_target']]
+test = []
+for i in range(len(testing)):
+    test.append(testing.iloc[i, 0])
+print(test)
 # print(df['target'])
 
 def build_binary_value_list(value_count) -> list:
@@ -197,6 +209,8 @@ def predict(tree: Tree.DTree, testing):
         # print("Showing attributes for row " + str(i) + "**********************")
         # print(testing.iloc[i])
         predictions.append(traverse_tree(tree, testing.iloc[i]))
+    score = accuracy_score(test, predictions)
+    print(score)
     print(predictions)
     return predictions
 
