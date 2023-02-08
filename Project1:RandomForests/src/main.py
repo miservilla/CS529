@@ -24,14 +24,14 @@ del attributes[:1]
 # Setting binary target column from provided target column 
 target = LabelEncoder()
 df_train['target'] = target.fit_transform(df_train['Class'])
-print(df_testing)
+# print(df_testing)
 df_testing['test_target'] = target.fit_transform(df_testing['Class'])
 # print(df_testing)
 testing = df_testing[['test_target']]
 test = []
 for i in range(len(testing)):
     test.append(testing.iloc[i, 0])
-print(test)
+# print(test)
 # print(df['target'])
 
 def build_binary_value_list(value_count) -> list:
@@ -113,7 +113,7 @@ def chi_info_finder(attribute, df, labels):
     return chi(parent_count, label_counts, 0.95)
 
 
-def build_binary_DT(attributes, df, DT_type, parent) -> Tree.DTree:
+def build_binary_DT(attributes: list, df, DT_type, parent) -> Tree.DTree:
 
     if len(df['target'].unique()) == 1: 
         # print("Single Value: returning LEAF of " + str(df['target'].unique()[0]))
@@ -216,15 +216,22 @@ def predict(tree: Tree.DTree, testing):
 
 def plant_forest(attributes: list, df, DT_type: str, forest_size: int, sample_size: int):
     forest = []
+    at = []
     for i in range(forest_size):
         sub_df = df.sample(n=sample_size)
-        forest.append(build_binary_DT(attributes, sub_df, DT_type, "root"))
+        at.extend(attributes)
+        forest.append(build_binary_DT(at, sub_df, DT_type, "root"))
     return forest
 
 
 # entropy_Tree = build_binary_DT(attributes, df, "entropy", "root")
 # print_tree(entropy_Tree, 1)
 
-gini_Tree = build_binary_DT(attributes, df_train, "gini", "root")
+# gini_Tree = build_binary_DT(attributes, df_train, "gini", "root")
 # print_tree(gini_Tree, 1)
-predict(gini_Tree, df_testing)
+# predict(gini_Tree, df_testing)
+
+forest = plant_forest(attributes, df_train, "gini", 10, 10)
+
+for tree in forest:
+    print(tree.node)
