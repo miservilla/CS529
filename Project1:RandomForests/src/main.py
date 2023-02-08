@@ -8,22 +8,22 @@ import scipy
 
 
 # Training data set
-df = pd.read_csv('Project1:RandomForests/src/bill_authentication.csv')
-print(df.shape)
-df, df_testing = train_test_split(df, test_size=0.2)
+df_train = pd.read_csv('Project1:RandomForests/src/bill_authentication.csv')
+print(df_train.shape)
+df_train, df_testing = train_test_split(df_train, test_size=0.2)
 # df_testing = pd.read_csv('DecisionTree/Test.csv')  # Testing data set
 df_testing = df_testing.sample(frac=1).reset_index(drop=True)
-print(df_testing)
+print(len(df_train), len(df_testing))
 
 # Removing column names that aren't attributes from training set
-attributes = list(df.columns.values)
+attributes = list(df_train.columns.values)
 del attributes[:1]
 # del attributes[4:]  
 # print(attributes)
 
 # Setting binary target column from provided target column 
 target = LabelEncoder()
-df['target'] = target.fit_transform(df['Class'])
+df_train['target'] = target.fit_transform(df_train['Class'])
 print(df_testing)
 df_testing['test_target'] = target.fit_transform(df_testing['Class'])
 # print(df_testing)
@@ -214,10 +214,14 @@ def predict(tree: Tree.DTree, testing):
     print(predictions)
     return predictions
 
+# def plant_forest(attributes: list, df, DT_type: str):
+
+
+
 
 # entropy_Tree = build_binary_DT(attributes, df, "entropy", "root")
 # print_tree(entropy_Tree, 1)
 
-gini_Tree = build_binary_DT(attributes, df, "gini", "root")
+gini_Tree = build_binary_DT(attributes, df_train, "gini", "root")
 # print_tree(gini_Tree, 1)
 predict(gini_Tree, df_testing)
