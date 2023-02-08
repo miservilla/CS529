@@ -9,11 +9,11 @@ import scipy
 
 # Training data set
 df_train = pd.read_csv('Project1:RandomForests/src/bill_authentication.csv')
-print(df_train.shape)
+# print(df_train.shape)
 df_train, df_testing = train_test_split(df_train, test_size=0.2)
 # df_testing = pd.read_csv('DecisionTree/Test.csv')  # Testing data set
 df_testing = df_testing.sample(frac=1).reset_index(drop=True)
-print(len(df_train), len(df_testing))
+# print(len(df_train), len(df_testing))
 
 # Removing column names that aren't attributes from training set
 attributes = list(df_train.columns.values)
@@ -214,9 +214,12 @@ def predict(tree: Tree.DTree, testing):
     print(predictions)
     return predictions
 
-# def plant_forest(attributes: list, df, DT_type: str):
-
-
+def plant_forest(attributes: list, df, DT_type: str, forest_size: int, sample_size: int):
+    forest = []
+    for i in range(forest_size):
+        sub_df = df.sample(n=sample_size)
+        forest.append(build_binary_DT(attributes, sub_df, DT_type, "root"))
+    return forest
 
 
 # entropy_Tree = build_binary_DT(attributes, df, "entropy", "root")
