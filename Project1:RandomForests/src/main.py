@@ -6,33 +6,41 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import scipy
 
+# Input Values
+run_type = 'bag_forest' 
+training_path = 'Project1:RandomForests/data/Training.csv'
+testing_path = ''
+target_column = 'class'
+not_an_attribute = ['id', 'class']
+
+
 
 # Training data set
-df_train = pd.read_csv('Project1:RandomForests/src/bill_authentication.csv')
-# print(df_train.shape)
-df_train, df_testing = train_test_split(df_train, test_size=0.2)
-# df_testing = pd.read_csv('DecisionTree/Test.csv')  # Testing data set
-df_testing = df_testing.sample(frac=1).reset_index(drop=True)
-# print(len(df_train), len(df_testing))
+df_train = pd.read_csv(training_path)
 
-# Removing column names that aren't attributes from training set
+# Sectioning data into a training subset and a validation subset
+df_train, df_validation = train_test_split(df_train, test_size=0.2)
+df_validation = df_validation.sample(frac=1).reset_index(drop=True)
+
+# Testing data set (No target values provided)
+# df_testing = pd.read_csv('') *************** NOT IN USE CURRENTLY *****************
+
+# Removing column names that aren't attributes from list of columns
 attributes = list(df_train.columns.values)
-del attributes[:1]
-# del attributes[4:]  
+for item in not_an_attribute:
+    attributes.remove(item)
 # print(attributes)
 
-# Setting binary target column from provided target column 
+# Setting binary target column of 1's and 0's from provided target column 
 target = LabelEncoder()
-df_train['target'] = target.fit_transform(df_train['Class'])
-# print(df_testing)
-df_testing['test_target'] = target.fit_transform(df_testing['Class'])
-# print(df_testing)
-testing = df_testing[['test_target']]
-test = []
-for i in range(len(testing)):
-    test.append(testing.iloc[i, 0])
-# print(test)
-# print(df['target'])
+df_train['target'] = target.fit_transform(df_train[target_column])
+df_validation['val_target'] = target.fit_transform(df_validation[target_column])
+validating = df_validation[['val_target']]
+
+# Getting list of target values from validation set for accuracy checking
+validation = []
+for i in range(len(validating)):
+    validation.append(validating.iloc[i, 0])
 
 def build_binary_value_list(value_count) -> list:
     count = []
@@ -112,7 +120,6 @@ def chi_info_finder(attribute, df, labels):
     # print(parent_count, label_counts)
     return chi(parent_count, label_counts, 0.95)
 
-
 def build_binary_DT(attributes: list, df, DT_type, parent) -> Tree.DTree:
 
     if len(df['target'].unique()) == 1: 
@@ -182,7 +189,6 @@ def build_binary_DT(attributes: list, df, DT_type, parent) -> Tree.DTree:
 
     return Tree.DTree(dic,lower_branch)
 
-
 def print_tree(tree: Tree.DTree, level:int):
 
     print("Tree Level: " + str(level))
@@ -201,7 +207,6 @@ def traverse_tree(tree: Tree.DTree, iter):
                 return traverse_tree(branch, iter)
     else:
         return tree.node['Leaf']
-
         
 def predict(tree: Tree.DTree, testing):
     predictions = []
@@ -209,10 +214,11 @@ def predict(tree: Tree.DTree, testing):
         # print("Showing attributes for row " + str(i) + "**********************")
         # print(testing.iloc[i])
         predictions.append(traverse_tree(tree, testing.iloc[i]))
-    score = accuracy_score(test, predictions)
-    print(score)
-    print(predictions)
+    # print(predictions)
     return predictions
+
+def accuracy(validation, predictions):
+    return accuracy_score(validation, predictions)
 
 def plant_forest(attributes: list, df, DT_type: str, forest_size: int, sample_size: int):
     forest = []
@@ -223,15 +229,38 @@ def plant_forest(attributes: list, df, DT_type: str, forest_size: int, sample_si
         forest.append(build_binary_DT(at, sub_df, DT_type, "root"))
     return forest
 
+def get_consensous(all_predictions:pd.DataFrame) -> list:
+    final_prediction = []
+    for i in range(all_predictions.shape[1]):
+        final_prediction.append(all_predictions[i].max())
+    return final_prediction
+
 
 # entropy_Tree = build_binary_DT(attributes, df, "entropy", "root")
 # print_tree(entropy_Tree, 1)
+# prediction = predict(entropy_Tree, df_validation)
+# accuracy(validation, prediction)
 
 # gini_Tree = build_binary_DT(attributes, df_train, "gini", "root")
 # print_tree(gini_Tree, 1)
-# predict(gini_Tree, df_testing)
+# prediction = predict(gini_Tree, df_validation)
+# accuracy(validation, prediction)
 
-forest = plant_forest(attributes, df_train, "gini", 10, 10)
+forest = plant_forest(attributes, df_train, "gini", 30, 500)
+forest_predictions = []
 
 for tree in forest:
-    print(tree.node)
+    # print(tree.node)
+    # print(len(tree.attributes))
+    # print_tree(tree,1)
+    forest_predictions.append(predict(tree, df_validation))
+
+FP_array = np.array(forest_predictions)
+df_predictions = pd.DataFrame(data=FP_array)
+forest_prediction = get_consensous(df_predictions)
+
+print(accuracy(validation, forest_prediction))
+    
+# print(forest_prediction) 
+
+    
