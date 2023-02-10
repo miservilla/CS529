@@ -8,7 +8,7 @@ import scipy
 
 # Input Values
 run_type = 'bag_forest' 
-training_path = 'Project1:RandomForests/data/Training.csv'
+training_path = 'data/Training.csv'
 testing_path = ''
 target_column = 'class'
 not_an_attribute = ['id', 'class']
@@ -246,14 +246,25 @@ def get_consensous(all_predictions:pd.DataFrame) -> list:
 # prediction = predict(gini_Tree, df_validation)
 # accuracy(validation, prediction)
 
+#(attributes, training set, method "gini" or "entropy", # of trees, # of samples)
 forest = plant_forest(attributes, df_train, "gini", 30, 500)
 forest_predictions = []
 
 for tree in forest:
     # print(tree.node)
     # print(len(tree.attributes))
-    # print_tree(tree,1)
+    print_tree(tree,1)
     forest_predictions.append(predict(tree, df_validation))
+
+for i in forest_predictions:
+    flag = False
+    for j in i:
+        if j == None:
+            print('None')
+            flag = True
+            break
+    if not flag:
+        print(accuracy(validation, i))
 
 FP_array = np.array(forest_predictions)
 df_predictions = pd.DataFrame(data=FP_array)
