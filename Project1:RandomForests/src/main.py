@@ -6,9 +6,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import scipy
 
-# Input Values
-run_type = 'bag_forest' 
-training_path = 'data/Training.csv'
+# Input Values: change to correct parameters 
+
+# run_type can be: 1)"entropy" 2)"gini" 3)"ME" 4)"bag_forest"
+run_type = "bag_forest" 
+training_path = 'Project1:RandomForests/data/Training.csv'
 testing_path = ''
 target_column = 'class'
 not_an_attribute = ['id', 'class']
@@ -95,6 +97,21 @@ def IG_gini(attribute, labels: list, df, tc):
         IG = IG - ((babytotal/total)*gini(count))
     return IG
 
+def ME(a):
+    a_sum = sum(a)
+    return 1-max(a[0]/a_sum, a[1]/a_sum)
+
+def IG_ME(attribute, labels: list, df, tc): 
+    IG = ME(tc)
+    total = df.shape[0]
+    for label in labels:
+        babyFrame = df.loc[df[attribute] == label]
+        babytotal = babyFrame.shape[0]
+        ltc = babyFrame['target'].value_counts()
+        count = build_binary_value_list(ltc)
+        IG = IG - ((babytotal/total)*ME(count))
+    return IG
+
 def chi(p, a, CI):
     cv = scipy.stats.chi2.ppf(CI, len(a) - 1)
     dfree = len(a) - 1
@@ -167,7 +184,12 @@ def build_binary_DT(attributes: list, df, DT_type, parent) -> Tree.DTree:
                 highest = IG
                 highest_att = attribute
 
-        # elif DT_type == "ME": 
+        elif DT_type == "ME": 
+            IG = IG_ME(attribute, labels, df, target_count)
+            chi2 = chi_info_finder(attribute, df, labels)
+            if IG > highest:
+                highest = IG
+                highest_att = attribute
             
     # print("Highest I.G. attribute is " + highest_att)
 
@@ -236,42 +258,51 @@ def get_consensous(all_predictions:pd.DataFrame) -> list:
     return final_prediction
 
 
-# entropy_Tree = build_binary_DT(attributes, df, "entropy", "root")
-# print_tree(entropy_Tree, 1)
-# prediction = predict(entropy_Tree, df_validation)
-# accuracy(validation, prediction)
+if run_type == "entropy":
+    entropy_Tree = build_binary_DT(attributes, df_train, "entropy", "root")
+    # print_tree(entropy_Tree, 1)
+    prediction = predict(entropy_Tree, df_validation)
+    print("Entropy accuracy = ", str(accuracy(validation, prediction)))
 
-# gini_Tree = build_binary_DT(attributes, df_train, "gini", "root")
-# print_tree(gini_Tree, 1)
-# prediction = predict(gini_Tree, df_validation)
-# accuracy(validation, prediction)
+elif run_type == "gini":
+    gini_Tree = build_binary_DT(attributes, df_train, "gini", "root")
+    # print_tree(gini_Tree, 1)
+    prediction = predict(gini_Tree, df_validation)
+    print("Gini accuracy = ", str(accuracy(validation, prediction)))
 
-#(attributes, training set, method "gini" or "entropy", # of trees, # of samples)
-forest = plant_forest(attributes, df_train, "gini", 30, 500)
-forest_predictions = []
+elif run_type == "ME":
+    ME_Tree = build_binary_DT(attributes, df_train, "ME", "root")
+    # print_tree(ME_Tree, 1)
+    prediction = predict(ME_Tree, df_validation)
+    print("ME accuracy = ", str(accuracy(validation, prediction)))
 
-for tree in forest:
-    # print(tree.node)
-    # print(len(tree.attributes))
-    print_tree(tree,1)
-    forest_predictions.append(predict(tree, df_validation))
+elif run_type == "bag_forest":
+    # (attributes, training set, method "gini" "entropy" or "ME", # of trees, # of samples)
+    forest = plant_forest(attributes, df_train, "gini", 30, 500)
+    forest_predictions = []
 
-for i in forest_predictions:
-    flag = False
-    for j in i:
-        if j == None:
-            print('None')
-            flag = True
-            break
-    if not flag:
-        print(accuracy(validation, i))
+    for tree in forest:
+        # print(tree.node)
+        # print(len(tree.attributes))
+        print_tree(tree,1)
+        forest_predictions.append(predict(tree, df_validation))
 
-FP_array = np.array(forest_predictions)
-df_predictions = pd.DataFrame(data=FP_array)
-forest_prediction = get_consensous(df_predictions)
+    for i in forest_predictions:
+        flag = False
+        for j in i:
+            if j == None:
+                print('None')
+                flag = True
+                break
+        if not flag:
+            print(accuracy(validation, i))
 
-print(accuracy(validation, forest_prediction))
+    FP_array = np.array(forest_predictions)
+    df_predictions = pd.DataFrame(data=FP_array)
+    forest_prediction = get_consensous(df_predictions)
+
+    print(accuracy(validation, forest_prediction))
     
-# print(forest_prediction) 
+    # print(forest_prediction) 
 
     
