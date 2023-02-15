@@ -12,7 +12,7 @@ import scipy
 run_type = "gini" 
 training_path = 'Project1:RandomForests/data/Training.csv'
 testing_path = 'Project1:RandomForests/data/agaricus-lepiota - testing.csv'
-use_testing = True
+use_testing = False
 target_column = 'class'
 not_an_attribute = ['id', 'class']
 
@@ -46,6 +46,12 @@ validation = []
 for i in range(len(validating)):
     validation.append(validating.iloc[i, 0])
 
+
+
+# 
+# Build binary value list gathers column counts for the target and 
+# fills in empty counts when value doesn't exist in DataFrame
+# 
 def build_binary_value_list(value_count) -> list:
     count = []
     try:
@@ -58,7 +64,11 @@ def build_binary_value_list(value_count) -> list:
         count.append(0)
     return count
 
-def entropy(a): 
+
+# 
+# Returns entropy value
+# 
+def entropy(a: list): 
   a_total = a[0] + a[1]
   #print(a_total)
   p1 = (a[0] / a_total)
@@ -70,7 +80,11 @@ def entropy(a):
   else:
     return -(p1 * (np.log2(p1))) - (p2 * (np.log2(p2)))
 
-def IG_entropy(attribute, labels: list, df, tc):
+
+# 
+# Caculates IG using entropy
+# 
+def IG_entropy(attribute, labels: list, df: pd.DataFrame, tc: list):
     IG = entropy(tc)
     total = df.shape[0]
     for label in labels:
@@ -81,6 +95,10 @@ def IG_entropy(attribute, labels: list, df, tc):
         IG = IG - ((babytotal/total)*entropy(count))
     return IG
 
+
+# 
+# Returns gini value
+# 
 def gini(a):
     p = 0
     a_sum = sum(a)
@@ -88,6 +106,10 @@ def gini(a):
         p += np.square(a[i] / a_sum)
     return 1 - p
 
+
+# 
+# Calculates IG using gini
+# 
 def IG_gini(attribute, labels: list, df, tc):
     IG = gini(tc)
     total = df.shape[0]
@@ -99,10 +121,18 @@ def IG_gini(attribute, labels: list, df, tc):
         IG = IG - ((babytotal/total)*gini(count))
     return IG
 
+
+# 
+# Returns ME value
+# 
 def ME(a):
     a_sum = sum(a)
     return 1-max(a[0]/a_sum, a[1]/a_sum)
 
+
+# 
+# Calculates IG using ME
+# 
 def IG_ME(attribute, labels: list, df, tc): 
     IG = ME(tc)
     total = df.shape[0]
@@ -114,6 +144,11 @@ def IG_ME(attribute, labels: list, df, tc):
         IG = IG - ((babytotal/total)*ME(count))
     return IG
 
+
+# 
+# Returns True if Chi 2 if information gained 
+# reaches the desired threshold
+# 
 def chi(p, a, CI):
     cv = scipy.stats.chi2.ppf(CI, len(a) - 1)
     dfree = len(a) - 1
@@ -127,6 +162,10 @@ def chi(p, a, CI):
             np.square(i[1] - a_exp1) / a_exp1
     return(c > cv)
 
+
+# 
+# Returns Chi 2 boolean from chi function 
+# 
 def chi_info_finder(attribute, df, labels):
     parent_vc = df['target'].value_counts()
     parent_count = build_binary_value_list(parent_vc)
@@ -139,6 +178,14 @@ def chi_info_finder(attribute, df, labels):
     # print(parent_count, label_counts)
     return chi(parent_count, label_counts, 0.95)
 
+
+# 
+# Returns a DT using desired method. 
+# DT is built recursively.
+# Note: chi 2 is not currently being used to 
+# determine useful attributes although it can 
+# easily be uncommented
+# 
 def build_binary_DT(attributes: list, df, DT_type, parent) -> Tree.DTree:
 
     if len(df['target'].unique()) == 1: 
@@ -176,13 +223,15 @@ def build_binary_DT(attributes: list, df, DT_type, parent) -> Tree.DTree:
            IG = IG_entropy(attribute, labels, df, target_count)
            chi2 = chi_info_finder(attribute, df, labels)
            if IG > highest:
-            highest = IG
-            highest_att = attribute
+                # if chi2:
+                highest = IG
+                highest_att = attribute
 
         elif DT_type == "gini":
             IG = IG_gini(attribute, labels, df, target_count)
             chi2 = chi_info_finder(attribute, df, labels)
             if IG > highest:
+                # if chi2:
                 highest = IG
                 highest_att = attribute
 
@@ -190,6 +239,7 @@ def build_binary_DT(attributes: list, df, DT_type, parent) -> Tree.DTree:
             IG = IG_ME(attribute, labels, df, target_count)
             chi2 = chi_info_finder(attribute, df, labels)
             if IG > highest:
+                # if chi2:
                 highest = IG
                 highest_att = attribute
             
@@ -213,6 +263,10 @@ def build_binary_DT(attributes: list, df, DT_type, parent) -> Tree.DTree:
 
     return Tree.DTree(dic,lower_branch)
 
+
+# 
+# Prints DT in a readable/understandable format
+# 
 def print_tree(tree: Tree.DTree, level:int):
 
     print("Tree Level: " + str(level))
@@ -221,6 +275,10 @@ def print_tree(tree: Tree.DTree, level:int):
     for branch in tree.attributes:
         print_tree(branch, level+1)
 
+
+# 
+# Used to go down branches an reach a prediction
+# 
 def traverse_tree(tree: Tree.DTree, iter):
     if not tree.isLeaf:
         current_att = tree.node['Attribute']
@@ -231,8 +289,12 @@ def traverse_tree(tree: Tree.DTree, iter):
                 return traverse_tree(branch, iter)
     else:
         return tree.node['Leaf']
-        
-def predict(tree: Tree.DTree, testing):
+
+
+# 
+# Returns list of predicted values
+# 
+def predict(tree: Tree.DTree, testing)-> list: 
     predictions = []
     for i in range(len(testing)):
         # print("Showing attributes for row " + str(i) + "**********************")
@@ -241,9 +303,20 @@ def predict(tree: Tree.DTree, testing):
     # print(predictions)
     return predictions
 
+
+# 
+# Returns accuracy when comparing two lists of values, 
+# first value is true value set
+# 
 def accuracy(validation, predictions):
     return accuracy_score(validation, predictions)
 
+
+# 
+# Builds a list of DT that are used together as a forest,
+# method used by IG can be selected as well as the number
+# trees to make and the size of the training set they use
+# 
 def plant_forest(attributes: list, df, DT_type: str, forest_size: int, sample_size: int):
     forest = []
     at = []
@@ -253,6 +326,10 @@ def plant_forest(attributes: list, df, DT_type: str, forest_size: int, sample_si
         forest.append(build_binary_DT(at, sub_df, DT_type, "root"))
     return forest
 
+
+# 
+# Returns a list of predicted values from all trees in the forest
+# 
 def get_consensous(all_predictions:pd.DataFrame) -> list:
     final_prediction = []
     for i in range(all_predictions.shape[1]):
@@ -260,6 +337,10 @@ def get_consensous(all_predictions:pd.DataFrame) -> list:
     return final_prediction
 
 
+# 
+# If statement set for running the desired type of tree base on 
+# configuration at the top of the file
+# 
 if run_type == "entropy":
     entropy_Tree = build_binary_DT(attributes, df_train, "entropy", "root")
     # print_tree(entropy_Tree, 1)
