@@ -231,9 +231,16 @@ def build_binary_DT(attributes: list, df, DT_type, parent) -> Tree.DTree:
             IG = IG_gini(attribute, labels, df, target_count)
             chi2 = chi_info_finder(attribute, df, labels)
             if IG > highest:
-                # if chi2:
                 highest = IG
                 highest_att = attribute
+                if not chi2:
+                    values = df['target'].value_counts()
+                    if values[0]>values[1]:
+                        # print("No more attributes: returning LEAF of " + str(0))
+                        return Tree.DTree({'Parent_Branch':parent,'Leaf': 0},None, True)
+                    else:  
+                        # print("No more attributes: returning LEAF of " + str(1))
+                        return Tree.DTree({'Parent_Branch':parent,'Leaf': 1},None, True)
 
         elif DT_type == "ME": 
             IG = IG_ME(attribute, labels, df, target_count)
@@ -361,7 +368,7 @@ if run_type == "entropy":
 
 elif run_type == "gini":
     gini_Tree = build_binary_DT(attributes, df_train, "gini", "root")
-    # print_tree(gini_Tree, 1)
+    print_tree(gini_Tree, 1)
     prediction = predict(gini_Tree, df_validation)
     print("Gini accuracy = ", str(accuracy(validation, prediction)))
 
