@@ -22,7 +22,7 @@ not_an_attribute = ['id', 'class']
 df_train = pd.read_csv(training_path)
 
 # Sectioning data into a training subset and a validation subset
-df_train, df_validation = train_test_split(df_train, test_size=0.2)
+df_train, df_validation = train_test_split(df_train, test_size=0.2, random_state = 7)
 df_validation = df_validation.sample(frac=1).reset_index(drop=True)
 
 # Testing data set (No target values provided)
