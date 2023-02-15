@@ -276,7 +276,7 @@ if run_type == "entropy":
         solutions['class'] = solutions['class'].replace(0, 'e')
         # print(solutions)
 
-        solutions.to_csv('Project1:RandomForests/data/solutions_entropy.cvs', index=False)
+        solutions.to_csv('Project1:RandomForests/data/solutions_entropy.csv', index=False)
 
 elif run_type == "gini":
     gini_Tree = build_binary_DT(attributes, df_train, "gini", "root")
@@ -294,7 +294,7 @@ elif run_type == "gini":
         solutions['class'] = solutions['class'].replace(0, 'e')
         # print(solutions)
 
-        solutions.to_csv('Project1:RandomForests/data/solutions_gini.cvs', index=False)
+        solutions.to_csv('Project1:RandomForests/data/solutions_gini.csv', index=False)
 
 elif run_type == "ME":
     ME_Tree = build_binary_DT(attributes, df_train, "ME", "root")
@@ -312,7 +312,7 @@ elif run_type == "ME":
         solutions['class'] = solutions['class'].replace(0, 'e')
         # print(solutions)
 
-        solutions.to_csv('Project1:RandomForests/data/solutions_ME.cvs', index=False)
+        solutions.to_csv('Project1:RandomForests/data/solutions_ME.csv', index=False)
 
 elif run_type == "bag_forest":
     # (attributes, training set, method "gini" "entropy" or "ME", # of trees, # of samples)
