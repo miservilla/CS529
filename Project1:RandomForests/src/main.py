@@ -9,9 +9,10 @@ import scipy
 # Input Values: change to correct parameters 
 
 # run_type can be: 1)"entropy" 2)"gini" 3)"ME" 4)"bag_forest"
-run_type = "bag_forest" 
+run_type = "gini" 
 training_path = 'Project1:RandomForests/data/Training.csv'
-testing_path = ''
+testing_path = 'Project1:RandomForests/data/agaricus-lepiota - testing.csv'
+use_testing = True
 target_column = 'class'
 not_an_attribute = ['id', 'class']
 
@@ -25,7 +26,7 @@ df_train, df_validation = train_test_split(df_train, test_size=0.2)
 df_validation = df_validation.sample(frac=1).reset_index(drop=True)
 
 # Testing data set (No target values provided)
-# df_testing = pd.read_csv('') *************** NOT IN USE CURRENTLY *****************
+df_testing = pd.read_csv(testing_path) 
 
 # Removing column names that aren't attributes from list of columns
 attributes = list(df_train.columns.values)
@@ -38,6 +39,7 @@ target = LabelEncoder()
 df_train['target'] = target.fit_transform(df_train[target_column])
 df_validation['val_target'] = target.fit_transform(df_validation[target_column])
 validating = df_validation[['val_target']]
+# print(df_train.head())
 
 # Getting list of target values from validation set for accuracy checking
 validation = []
@@ -264,17 +266,53 @@ if run_type == "entropy":
     prediction = predict(entropy_Tree, df_validation)
     print("Entropy accuracy = ", str(accuracy(validation, prediction)))
 
+    if use_testing:
+        test_prediction = predict(entropy_Tree, df_testing)
+        # print(test_prediction)
+
+        solutions = pd.DataFrame(data = df_testing['id'])
+        solutions['class'] = test_prediction
+        solutions['class'] = solutions['class'].replace(1,'p')
+        solutions['class'] = solutions['class'].replace(0, 'e')
+        # print(solutions)
+
+        solutions.to_csv('Project1:RandomForests/data/solutions_entropy.cvs', index=False)
+
 elif run_type == "gini":
     gini_Tree = build_binary_DT(attributes, df_train, "gini", "root")
     # print_tree(gini_Tree, 1)
     prediction = predict(gini_Tree, df_validation)
     print("Gini accuracy = ", str(accuracy(validation, prediction)))
 
+    if use_testing:
+        test_prediction = predict(gini_Tree, df_testing)
+        # print(test_prediction)
+
+        solutions = pd.DataFrame(data = df_testing['id'])
+        solutions['class'] = test_prediction
+        solutions['class'] = solutions['class'].replace(1,'p')
+        solutions['class'] = solutions['class'].replace(0, 'e')
+        # print(solutions)
+
+        solutions.to_csv('Project1:RandomForests/data/solutions_gini.cvs', index=False)
+
 elif run_type == "ME":
     ME_Tree = build_binary_DT(attributes, df_train, "ME", "root")
     # print_tree(ME_Tree, 1)
     prediction = predict(ME_Tree, df_validation)
     print("ME accuracy = ", str(accuracy(validation, prediction)))
+
+    if use_testing:
+        test_prediction = predict(ME_Tree, df_testing)
+        # print(test_prediction)
+
+        solutions = pd.DataFrame(data = df_testing['id'])
+        solutions['class'] = test_prediction
+        solutions['class'] = solutions['class'].replace(1,'p')
+        solutions['class'] = solutions['class'].replace(0, 'e')
+        # print(solutions)
+
+        solutions.to_csv('Project1:RandomForests/data/solutions_ME.cvs', index=False)
 
 elif run_type == "bag_forest":
     # (attributes, training set, method "gini" "entropy" or "ME", # of trees, # of samples)
