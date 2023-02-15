@@ -223,9 +223,16 @@ def build_binary_DT(attributes: list, df, DT_type, parent) -> Tree.DTree:
            IG = IG_entropy(attribute, labels, df, target_count)
            chi2 = chi_info_finder(attribute, df, labels)
            if IG > highest:
-                # if chi2:
                 highest = IG
                 highest_att = attribute
+                if not chi2:
+                    values = df['target'].value_counts()
+                    if values[0]>values[1]:
+                        # print("Does not meet Chi: returning LEAF of " + str(0))
+                        return Tree.DTree({'Parent_Branch':parent,'Leaf': 0},None, True)
+                    else:  
+                        # print("Does not meet Chi: returning LEAF of " + str(1))
+                        return Tree.DTree({'Parent_Branch':parent,'Leaf': 1},None, True)
 
         elif DT_type == "gini":
             IG = IG_gini(attribute, labels, df, target_count)
@@ -236,19 +243,26 @@ def build_binary_DT(attributes: list, df, DT_type, parent) -> Tree.DTree:
                 if not chi2:
                     values = df['target'].value_counts()
                     if values[0]>values[1]:
-                        # print("No more attributes: returning LEAF of " + str(0))
+                        # print("Does not meet Chi: returning LEAF of " + str(0))
                         return Tree.DTree({'Parent_Branch':parent,'Leaf': 0},None, True)
                     else:  
-                        # print("No more attributes: returning LEAF of " + str(1))
+                        # print("Does not meet Chi: returning LEAF of " + str(1))
                         return Tree.DTree({'Parent_Branch':parent,'Leaf': 1},None, True)
 
         elif DT_type == "ME": 
             IG = IG_ME(attribute, labels, df, target_count)
             chi2 = chi_info_finder(attribute, df, labels)
             if IG > highest:
-                # if chi2:
                 highest = IG
                 highest_att = attribute
+                if not chi2:
+                    values = df['target'].value_counts()
+                    if values[0]>values[1]:
+                        # print("Does not meet Chi: returning LEAF of " + str(0))
+                        return Tree.DTree({'Parent_Branch':parent,'Leaf': 0},None, True)
+                    else:  
+                        # print("Does not meet Chi: returning LEAF of " + str(1))
+                        return Tree.DTree({'Parent_Branch':parent,'Leaf': 1},None, True)
             
     # print("Highest I.G. attribute is " + highest_att)
 
