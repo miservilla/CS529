@@ -22,4 +22,5 @@ print(train_sparse)
 print(train_sparse.shape)
 
 
-sparse.save_npz('csr_train.csv', train_sparse)
+sparse.save_npz('/home/michaelservilla/CS529/Project_2/csr_train.csv.npz', train_sparse)
+# train_sparse = sparse.load_npz('/home/michaelservilla/CS529/Project_2/csr_train.csv.npz')
