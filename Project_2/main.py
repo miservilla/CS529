@@ -1,3 +1,27 @@
+'''
+training.csv shape(12000, 61190), column 1 is index, column 61190 is newsgroup
+(1-20), columns 2-61188 are words in row vector. Note: Using index base = 1, not
+ 0. For consistency, consider change all to 0 based indexing. Index column was
+ removed when creating sparse matric (not sure if necessary), so all column
+ definitions are one less (eg. 61189 is newsgroup labes).
+
+ vocabulary.txt shape (61188, 1), one column with 61188 words. Index will map to 
+ column number in training.csv. Note: Using index base = 1, not 0. For 
+ consistency, consider change all to 0 based indexing.
+
+newsgrouplabels.txt shape (20, 1), one column with 20 rows of newsgroup labels. 
+Index will map to last column in training.csv (each word vector row in
+training.csv will have a single news group attached). Note: Using index base = 
+1, not 0. For consistency, consider change all to 0 based indexing.
+
+testing.csv shape(not calculated), similar to training.csv except last column
+with news group labels dropped.
+
+
+
+'''
+
+
 import pandas as pd
 from scipy.sparse import csr_matrix
 from scipy import sparse
@@ -10,11 +34,14 @@ train_sparse = sparse.load_npz(
     '/home/michaelservilla/CS529/Project_2/csr_train.csv.npz')
 
 train = sparse.csr_matrix(train_sparse)
+# print(train)
 
 print(train.shape)
-print(train.data)
-print(train.indices[1])
-col_index = 0
-for i in range(120):
-    print(train[i,train.indices[col_index]])
-    col_index += 1
+# print(train.data)
+# print(train.indices[1])
+
+# for i in range(120):
+#     print(train[i, 61188])
+# for i in range(120):
+#     print(train.data[i])
+print(train[11999, 61188])
