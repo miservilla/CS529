@@ -1,9 +1,7 @@
 '''
 training.csv shape(12000, 61190), column 1 is index, column 61190 is newsgroup
 (1-20), columns 2-61188 are words in row vector. Note: Using index base = 1, not
- 0. For consistency, consider change all to 0 based indexing. Index column was
- removed when creating sparse matric (not sure if necessary), so all column
- definitions are one less (eg. 61189 is newsgroup labes).
+ 0. For consistency, consider change all to 0 based indexing.
 
  vocabulary.txt shape (61188, 1), one column with 61188 words. Index will map to 
  column number in training.csv. Note: Using index base = 1, not 0. For 

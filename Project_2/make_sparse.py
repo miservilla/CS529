@@ -11,7 +11,7 @@ from numpy import savetxt
 # df = df.drop(df.columns[0], axis=1)
 
 train = genfromtxt('/home/michaelservilla/CS529/Project_2/training.csv', delimiter=',')
-train = np.delete(train,0,1)
+# train = np.delete(train,0,1)
 print(train)
 print(train[:, 0])
 print(train.data.shape)
