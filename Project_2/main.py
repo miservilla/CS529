@@ -24,7 +24,13 @@ yk_words = total number of words in yk (newsgroup)
 lh_arr = likelihood (2d array with newsgroups as rows and words as columns, last
 column is prior)
 
+TODO
+need to sum up word count for each newsgroup, and then total number of words for
+each newsgroup
 
+then calculate likelihood for each word in each newsgroup
+
+then calculate prior
 
 
 '''
