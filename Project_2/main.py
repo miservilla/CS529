@@ -15,6 +15,16 @@ training.csv will have a single news group attached). Note: Using index base =
 testing.csv shape(not calculated), similar to training.csv except last column
 with news group labels dropped.
 
+yk = newsgroup
+yk_docs_cnt = number of docs in yk (count up all lines in each newsgroup)
+total_docs = total number of docs (line count)
+v_total = total length of vocabulary count
+x_i = number of each individual word in yk (newsgroup)
+yk_words = total number of words in yk (newsgroup)
+lh_arr = likelihood (2d array with newsgroups as rows and words as columns, last
+column is prior)
+
+
 
 
 '''
@@ -28,18 +38,38 @@ from numpy import genfromtxt
 from numpy import asarray
 from numpy import savetxt
 
+def mle(yk_docs_cnt, total_docs):
+    return(yk_docs_cnt / total_docs)#prior
+
+def alpha(v_total):
+    return(1 + (1 / v_total))#alpha
+
+def map(x_i, alpha, yk_words, v_total):
+    return((x_i + (alpha - 1)) / (yk_words + (alpha * v_total)))#likelihood
+
+lh = []
+
+
 train_sparse = sparse.load_npz(
     '/home/michaelservilla/CS529/Project_2/csr_train.csv.npz')
 
 train = sparse.csr_matrix(train_sparse)
-# print(train)
+df = pd.DataFrame(columns=['index', 'newsgroups'])
 
-print(train.shape)
-# print(train.data)
-# print(train.indices[1])
+for i in range(12000):
+    df.loc[len(df.index)] = [i, train[i, 61189]]
 
-# for i in range(120):
-#     print(train[i, 61188])
-# for i in range(120):
-#     print(train.data[i])
-print(train[11999, 61188])
+newsgroups_sorted = df.sort_values(by=['newsgroups'], ignore_index=True)
+# print(newsgroups_sorted)
+df_1 = df[df['newsgroups'] == 1]
+# print(df_1)
+
+dfs = {}
+for i in range(1, 21):
+    dfs["df_{0}".format(i)] = df[df['newsgroups'] == i]
+
+print(dfs['df_13'])
+
+print(train[0, 2])
+# for i in range(1, 21):
+#     for j in range(12000):
