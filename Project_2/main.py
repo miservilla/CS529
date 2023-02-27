@@ -52,12 +52,6 @@ def alpha(v_total):
     return(1 + (1 / v_total))# alpha
 
 def map(x_i, yk_words, v_total):# likelihood
-    # print(x_i)
-    # print(yk_words)
-    # print(v_total)
-    # print(alpha(v_total))
-    # print((x_i + (alpha(v_total) - 1)) /
-    #       (yk_words + (alpha(v_total) * v_total)))
     return((x_i + (alpha(v_total) - 1)) / (yk_words + (alpha(v_total) * v_total)))
 
 lh = [[0 for x in range(61189)] for y in range(21)]
@@ -80,6 +74,7 @@ wrd_count = 61188
 
 sparse_newsgroups = {} # Dictionary of sparse matrix for each newsgroup
 v_total = 61188
+count = 1
 
 for dataframe in dataframes:
     print("News Group:" + str(dataframes[dataframe].iloc[0]['newsgroups']))
@@ -99,19 +94,16 @@ for dataframe in dataframes:
 
     for i in range(61188):
         x_i = sparse_newsgroups[index][0, i]
-        yk_words = np.sum
+        yk_words = np.sum(sparse_newsgroups[index])
+        lh[count][i] = map(x_i, yk_words, v_total)
 
+    lh[count][61188] = mle(yk_docs_cnt, total_docs)
 
+    count += 1
 
-for i in range(1, 21):
-    for j in range(61187):
-        x_i = sparse_newsgroups[str(1)][0, j]
-        yk_words = np.sum(sparse_newsgroups[str(1)])
-        lh[i][j] = (map(x_i, yk_words, v_total))
 
 print(lh[1][0])
-# print(count_0)
-# print(count_not_0)
+print(lh[1][61188])
 
 print(wrd_per_NG)
 sparse.save_npz('Project_2/wrd_per_NG.csv.npz', wrd_per_NG)
