@@ -89,11 +89,22 @@ wrd_count = 61188
 #         wrd_per_NG[0,i] = wrd_per_NG[0,i] + train[row,i]
 # print(wrd_per_NG)
 
+sparse_newsgroups = {} # Dictionary of sparse matrix for each newsgroup
+
 for dataframe in dataframes:
-    print(dataframes[dataframe].iloc[0]['newsgroups']-1)
+    print("News Group:" + str(dataframes[dataframe].iloc[0]['newsgroups']))
+    print("Size: " + str(len(dataframes[dataframe])))
+    index = str(dataframes[dataframe].iloc[0]['newsgroups'])
+    sparse_newsgroups["{0}".format(index)] = csr_matrix((1,61190), dtype=int)
     for row in dataframes[dataframe]['index']:
-        for i in range(1,wrd_count+1):
-            wrd_per_NG[(dataframes[dataframe].iloc[0]['newsgroups']-1),i] = wrd_per_NG[(dataframes[dataframe].iloc[0]['newsgroups']-1),i] + train[row,i]
+        # print(train[row].toarray())
+        # print(sparse_newsgroups[index])
+        sparse_newsgroups[index] = train[row].toarray() + sparse_newsgroups[index].copy()
+
+    print(sparse_newsgroups[index])
+
+        # for i in range(1,wrd_count+1):
+        #     wrd_per_NG[(dataframes[dataframe].iloc[0]['newsgroups']-1),i] = wrd_per_NG[(dataframes[dataframe].iloc[0]['newsgroups']-1),i] + train[row,i]
 
 
 print(wrd_per_NG)
