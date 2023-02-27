@@ -43,6 +43,7 @@ import numpy as np
 from numpy import genfromtxt
 from numpy import asarray
 from numpy import savetxt
+import math
 
 def mle(yk_docs_cnt, total_docs):
     return(yk_docs_cnt / total_docs)#prior
@@ -50,8 +51,14 @@ def mle(yk_docs_cnt, total_docs):
 def alpha(v_total):
     return(1 + (1 / v_total))#alpha
 
-def map(x_i, alpha, yk_words, v_total):
-    return((x_i + (alpha - 1)) / (yk_words + (alpha * v_total)))#likelihood
+def map(x_i, yk_words, v_total):# likelihood
+    print(x_i)
+    print(yk_words)
+    print(v_total)
+    print(alpha(v_total))
+    print((x_i + (alpha(v_total) - 1)) /
+          (yk_words + (alpha(v_total) * v_total)))
+    return((x_i + (alpha(v_total) - 1)) / (yk_words + (alpha(v_total) * v_total)))
 
 lh = []
 
@@ -82,10 +89,28 @@ for dataframe in dataframes:
         sparse_newsgroups[index] = train[row].toarray() + sparse_newsgroups[index].copy()
 
     print(sparse_newsgroups[index][0,1])
-    ng_less = np.delete(sparse_newsgroups[index], 0)
-    ng_less = np.delete(ng_less, 61188)
-    print(ng_less)
-    print(np.sum(ng_less))
+    sparse_newsgroups[index] = np.delete(sparse_newsgroups[index], 0)
+    sparse_newsgroups[index] = np.delete(sparse_newsgroups[index], 61188)
+    print(sparse_newsgroups[index])
+    print(np.sum(sparse_newsgroups[index]))
+
+count_0 = 61188
+count_not_0 = 0
+v_total = 61188
+for i in range(61187):
+    # if sparse_newsgroups[str(1)][0, i] != 0:
+    #     count_0 -= 1
+    #     count_not_0 += 1
+    #     x_i = sparse_newsgroups[str(1)][0, i]
+    #     yk_words = np.sum(sparse_newsgroups[index])
+    #     print(map(x_i, yk_words, v_total))
+    x_i = sparse_newsgroups[str(1)][0, i]
+    yk_words = np.sum(sparse_newsgroups[str(1)])
+    lh.append(math.log(map(x_i, yk_words, v_total)))
+
+print(lh[0])
+# print(count_0)
+# print(count_not_0)
 
 print(wrd_per_NG)
 sparse.save_npz('Project_2/wrd_per_NG.csv.npz', wrd_per_NG)
