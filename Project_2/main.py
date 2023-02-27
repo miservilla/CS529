@@ -55,7 +55,6 @@ def map(x_i, alpha, yk_words, v_total):
 
 lh = []
 
-
 train_sparse = sparse.load_npz(
     'Project_2/csr_train.csv.npz')
 
@@ -65,29 +64,12 @@ df = pd.DataFrame(columns=['index', 'newsgroups'])
 for i in range(12000):
     df.loc[len(df.index)] = [i, train[i, 61189]] # df starts at index 0
 
-# print(df) 
-
 dataframes = {} # Dictionary of dataframes with newsgroups indexes 
 for i in range(1, 21):
     dataframes["df_{0}".format(i)] = df[df['newsgroups'] == i]
 
-
-
-# print(train[11986]) # [index, word]
-# print(dataframes['df_1'])
-
 wrd_per_NG = csr_matrix((20,61189), dtype=int)
 wrd_count = 61188
-
-# print(dataframes['df_1'])
-
-# for row in dataframes['df_1']['index']:
-#     # print('current row: ' + str(row))
-#     for i in range(1,wrd_count+1):
-#         # print('current i: ' + str(i))
-#         # print(train[row,i])
-#         wrd_per_NG[0,i] = wrd_per_NG[0,i] + train[row,i]
-# print(wrd_per_NG)
 
 sparse_newsgroups = {} # Dictionary of sparse matrix for each newsgroup
 
@@ -97,15 +79,13 @@ for dataframe in dataframes:
     index = str(dataframes[dataframe].iloc[0]['newsgroups'])
     sparse_newsgroups["{0}".format(index)] = csr_matrix((1,61190), dtype=int)
     for row in dataframes[dataframe]['index']:
-        # print(train[row].toarray())
-        # print(sparse_newsgroups[index])
         sparse_newsgroups[index] = train[row].toarray() + sparse_newsgroups[index].copy()
 
-    print(sparse_newsgroups[index])
-
-        # for i in range(1,wrd_count+1):
-        #     wrd_per_NG[(dataframes[dataframe].iloc[0]['newsgroups']-1),i] = wrd_per_NG[(dataframes[dataframe].iloc[0]['newsgroups']-1),i] + train[row,i]
-
+    print(sparse_newsgroups[index][0,1])
+    ng_less = np.delete(sparse_newsgroups[index], 0)
+    ng_less = np.delete(ng_less, 61188)
+    print(ng_less)
+    print(np.sum(ng_less))
 
 print(wrd_per_NG)
 sparse.save_npz('Project_2/wrd_per_NG.csv.npz', wrd_per_NG)
