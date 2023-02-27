@@ -57,25 +57,46 @@ lh = []
 
 
 train_sparse = sparse.load_npz(
-    '/home/michaelservilla/CS529/Project_2/csr_train.csv.npz')
+    'Project_2/csr_train.csv.npz')
 
 train = sparse.csr_matrix(train_sparse)
 df = pd.DataFrame(columns=['index', 'newsgroups'])
 
 for i in range(12000):
-    df.loc[len(df.index)] = [i, train[i, 61189]]
+    df.loc[len(df.index)] = [i, train[i, 61189]] # df starts at index 0
 
-newsgroups_sorted = df.sort_values(by=['newsgroups'], ignore_index=True)
-# print(newsgroups_sorted)
-df_1 = df[df['newsgroups'] == 1]
-# print(df_1)
+# print(df) 
 
-dfs = {}
+dataframes = {} # Dictionary of dataframes with newsgroups indexes 
 for i in range(1, 21):
-    dfs["df_{0}".format(i)] = df[df['newsgroups'] == i]
+    dataframes["df_{0}".format(i)] = df[df['newsgroups'] == i]
 
-print(dfs['df_13'])
 
-print(train[0, 2])
-# for i in range(1, 21):
-#     for j in range(12000):
+
+# print(train[11986]) # [index, word]
+# print(dataframes['df_1'])
+
+wrd_per_NG = csr_matrix((20,61189), dtype=int)
+wrd_count = 61188
+
+# print(dataframes['df_1'])
+
+# for row in dataframes['df_1']['index']:
+#     # print('current row: ' + str(row))
+#     for i in range(1,wrd_count+1):
+#         # print('current i: ' + str(i))
+#         # print(train[row,i])
+#         wrd_per_NG[0,i] = wrd_per_NG[0,i] + train[row,i]
+# print(wrd_per_NG)
+
+for dataframe in dataframes:
+    print(dataframes[dataframe].iloc[0]['newsgroups']-1)
+    for row in dataframes[dataframe]['index']:
+        for i in range(1,wrd_count+1):
+            wrd_per_NG[(dataframes[dataframe].iloc[0]['newsgroups']-1),i] = wrd_per_NG[(dataframes[dataframe].iloc[0]['newsgroups']-1),i] + train[row,i]
+
+
+print(wrd_per_NG)
+sparse.save_npz('Project_2/wrd_per_NG.csv.npz', wrd_per_NG)
+        
+        
