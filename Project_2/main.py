@@ -79,11 +79,12 @@ wrd_per_NG = csr_matrix((20,61189), dtype=int)
 wrd_count = 61188
 
 sparse_newsgroups = {} # Dictionary of sparse matrix for each newsgroup
+v_total = 61188
 
 for dataframe in dataframes:
     print("News Group:" + str(dataframes[dataframe].iloc[0]['newsgroups']))
     print("Size: " + str(len(dataframes[dataframe])))
-    yk_docs_cnt = len(dataframes[dataframe]
+    yk_docs_cnt = len(dataframes[dataframe])
     index = str(dataframes[dataframe].iloc[0]['newsgroups'])
     sparse_newsgroups["{0}".format(index)] = csr_matrix((1,61190), dtype=int)
     for row in dataframes[dataframe]['index']:
@@ -96,9 +97,11 @@ for dataframe in dataframes:
     print(np.sum(sparse_newsgroups[index]))
     total_docs = np.sum(sparse_newsgroups[index])
 
-count_0 = 61188
-count_not_0 = 0
-v_total = 61188
+    for i in range(61188):
+        x_i = sparse_newsgroups[index][0, i]
+        yk_words = np.sum
+
+
 
 for i in range(1, 21):
     for j in range(61187):
