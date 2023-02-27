@@ -46,21 +46,21 @@ from numpy import savetxt
 import math
 
 def mle(yk_docs_cnt, total_docs):
-    return(yk_docs_cnt / total_docs)#prior
+    return(yk_docs_cnt / total_docs)# prior
 
 def alpha(v_total):
-    return(1 + (1 / v_total))#alpha
+    return(1 + (1 / v_total))# alpha
 
 def map(x_i, yk_words, v_total):# likelihood
-    print(x_i)
-    print(yk_words)
-    print(v_total)
-    print(alpha(v_total))
-    print((x_i + (alpha(v_total) - 1)) /
-          (yk_words + (alpha(v_total) * v_total)))
+    # print(x_i)
+    # print(yk_words)
+    # print(v_total)
+    # print(alpha(v_total))
+    # print((x_i + (alpha(v_total) - 1)) /
+    #       (yk_words + (alpha(v_total) * v_total)))
     return((x_i + (alpha(v_total) - 1)) / (yk_words + (alpha(v_total) * v_total)))
 
-lh = []
+lh = [[0 for x in range(61189)] for y in range(21)]
 
 train_sparse = sparse.load_npz(
     'Project_2/csr_train.csv.npz')
@@ -83,6 +83,7 @@ sparse_newsgroups = {} # Dictionary of sparse matrix for each newsgroup
 for dataframe in dataframes:
     print("News Group:" + str(dataframes[dataframe].iloc[0]['newsgroups']))
     print("Size: " + str(len(dataframes[dataframe])))
+    yk_docs_cnt = len(dataframes[dataframe]
     index = str(dataframes[dataframe].iloc[0]['newsgroups'])
     sparse_newsgroups["{0}".format(index)] = csr_matrix((1,61190), dtype=int)
     for row in dataframes[dataframe]['index']:
@@ -93,22 +94,19 @@ for dataframe in dataframes:
     sparse_newsgroups[index] = np.delete(sparse_newsgroups[index], 61188)
     print(sparse_newsgroups[index])
     print(np.sum(sparse_newsgroups[index]))
+    total_docs = np.sum(sparse_newsgroups[index])
 
 count_0 = 61188
 count_not_0 = 0
 v_total = 61188
-for i in range(61187):
-    # if sparse_newsgroups[str(1)][0, i] != 0:
-    #     count_0 -= 1
-    #     count_not_0 += 1
-    #     x_i = sparse_newsgroups[str(1)][0, i]
-    #     yk_words = np.sum(sparse_newsgroups[index])
-    #     print(map(x_i, yk_words, v_total))
-    x_i = sparse_newsgroups[str(1)][0, i]
-    yk_words = np.sum(sparse_newsgroups[str(1)])
-    lh.append(math.log(map(x_i, yk_words, v_total)))
 
-print(lh[0])
+for i in range(1, 21):
+    for j in range(61187):
+        x_i = sparse_newsgroups[str(1)][0, j]
+        yk_words = np.sum(sparse_newsgroups[str(1)])
+        lh[i][j] = (map(x_i, yk_words, v_total))
+
+print(lh[1][0])
 # print(count_0)
 # print(count_not_0)
 
