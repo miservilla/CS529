@@ -113,14 +113,4 @@ product = np.array(product)
 
 print(lh_np.shape)
 print(test_np.shape)
-print(product.shape)
-
-# for i in range(6774):
-#     for j in range(20):
-#         for k in range(61187):
-#             if test_np[i][k] != 0:
-#                 print(str(i) + " " + str(j) + " " +  str(k))
-#                 print(test_np[i][k] * lh_np[j][k])
-
-        
-        
+print(product.shape)       

@@ -5,6 +5,7 @@ import numpy as np
 from numpy import genfromtxt
 from numpy import asarray
 from numpy import savetxt
+from sklearn.model_selection import train_test_split
 
 
 # df = pd.read_csv('/home/michaelservilla/CS529/Project_2/training.csv', sep=',')
@@ -17,6 +18,10 @@ test = genfromtxt(
 print(train)
 print(train[:, 0])
 print(train.data.shape)
+
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.30, random_state=42)
+
 
 print(test)
 print(test[:, 0])
