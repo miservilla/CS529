@@ -25,12 +25,7 @@ lh_arr = likelihood (2d array with newsgroups as rows and words as columns, last
 column is prior)
 
 TODO
-need to sum up word count for each newsgroup, and then total number of words for
-each newsgroup
 
-then calculate likelihood for each word in each newsgroup
-
-then calculate prior
 
 
 '''
@@ -43,6 +38,7 @@ import numpy as np
 from numpy import genfromtxt
 from numpy import asarray
 from numpy import savetxt
+from numpy import loadtxt
 import math
 
 def mle(yk_docs_cnt, total_docs):
@@ -52,7 +48,7 @@ def alpha(v_total):
     return(1 + (1 / v_total))# alpha
 
 def map(x_i, yk_words, v_total):# likelihood
-    return((x_i + (alpha(v_total) - 1)) / (yk_words + (alpha(v_total) * v_total)))
+    return ((x_i + (alpha(v_total) - 1)) / (yk_words + (alpha(v_total) * v_total)))
 
 lh = [[0 for x in range(61189)] for y in range(21)]
 
@@ -92,9 +88,9 @@ for dataframe in dataframes:
     print(np.sum(sparse_newsgroups[index]))
     total_docs = np.sum(sparse_newsgroups[index])
 
+    yk_words = np.sum(sparse_newsgroups[index])
     for i in range(61188):
         x_i = sparse_newsgroups[index][0, i]
-        yk_words = np.sum(sparse_newsgroups[index])
         lh[count][i] = map(x_i, yk_words, v_total)
 
     lh[count][61188] = mle(yk_docs_cnt, total_docs)
@@ -102,10 +98,29 @@ for dataframe in dataframes:
     count += 1
 
 
-print(lh[1][0])
-print(lh[1][61188])
+print()
+lh_np = np.asarray(lh)
+lh_np = np.delete(lh_np, 0, 0) # delete row 0, all zero's
+savetxt('Project_2/lh_np.csv', lh_np, delimiter=',')
 
-print(wrd_per_NG)
-sparse.save_npz('Project_2/wrd_per_NG.csv.npz', wrd_per_NG)
+test_sparse = sparse.load_npz('Project_2/csr_test.csv.npz')
+test = sparse.csr_matrix(test_sparse)
+test_np = csr_matrix.toarray(test)
+test_np = np.delete(test_np, 0, 1) # delete 1st column (index)
+
+product = [[0 for x in range(20)] for y in range(6774)]
+product = np.array(product)
+
+print(lh_np.shape)
+print(test_np.shape)
+print(product.shape)
+
+# for i in range(6774):
+#     for j in range(20):
+#         for k in range(61187):
+#             if test_np[i][k] != 0:
+#                 print(str(i) + " " + str(j) + " " +  str(k))
+#                 print(test_np[i][k] * lh_np[j][k])
+
         
         
