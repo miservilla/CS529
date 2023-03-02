@@ -8,7 +8,7 @@ from numpy import savetxt
 from numpy import loadtxt
 import math
 
-lh_np = loadtxt('lh_np.csv', delimiter=',')
+lh_np = loadtxt('Project_2/lh_np.csv', delimiter=',')
 prior = lh_np[:, 61188]
 lh_np = np.delete(lh_np, 61188, 1)
 test_sparse = sparse.load_npz('Project_2/csr_test.csv.npz')
@@ -16,12 +16,16 @@ test = sparse.csr_matrix(test_sparse)
 test_np = csr_matrix.toarray(test)
 test_np = np.delete(test_np, 0, 1)  # delete 1st column (index)
 
-product = [[0 for x in range(20)] for y in range(6774)]
+product = [[0 for x in range(20)] for y in range(2400)]
 product = np.array(product)
 
 result = []
+print(test_np.shape)
+y = test_np[:, 61188]
+test_np = np.delete(test_np, 61188, 1)
 
-for i in range(6774):
+
+for i in range(len(test_np)):
     a = test_np[i]
     b = (a * lh_np)
     e = []
@@ -35,5 +39,21 @@ for i in range(6774):
     result.append(np.argmax(e))
     del e
 
+result = np.array(result)
+for i in range(len(result)):
+    result[i] = result[i] + 1
+
+print("y values")
+print(y.shape)
+print(y)
+
+print("results values")
+print(result.shape)
 print(result)
-        
+
+accuracy_count = 0
+for i in range(2400):
+    if y[i] == result[i]:
+        accuracy_count += 1
+
+print(accuracy_count / 2400)

@@ -12,17 +12,26 @@ from sklearn.model_selection import train_test_split
 # df = df.drop(df.columns[0], axis=1)
 
 train = genfromtxt('/home/michaelservilla/CS529/Project_2/training.csv', delimiter=',')
-test = genfromtxt(
-    '/home/michaelservilla/CS529/Project_2/testing.csv', delimiter=',')
+# test = genfromtxt(
+#     '/home/michaelservilla/CS529/Project_2/testing.csv', delimiter=',')
 # train = np.delete(train,0,1)
+print("Train before split")
 print(train)
 print(train[:, 0])
 print(train.data.shape)
 
+split = len(train) * 0.80
+print(split)
+indices = np.random.permutation(train.shape[0])
+training_idx, test_idx = indices[:split], indices[split:]
+train, test = train[training_idx, :], train[test_idx, :]
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.30, random_state=42)
+print("Train after split")
+print(train)
+print(train[:, 0])
+print(train.data.shape)
 
-
+print("Test after split")
 print(test)
 print(test[:, 0])
 print(test.data.shape)

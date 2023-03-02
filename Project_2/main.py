@@ -56,9 +56,14 @@ train_sparse = sparse.load_npz(
     'Project_2/csr_train.csv.npz')
 
 train = sparse.csr_matrix(train_sparse)
+
+print(train.shape)
+print(train.shape[0])
+print(train.shape[1])
+
 df = pd.DataFrame(columns=['index', 'newsgroups'])
 
-for i in range(12000):
+for i in range(9600):
     df.loc[len(df.index)] = [i, train[i, 61189]] # df starts at index 0
 
 dataframes = {} # Dictionary of dataframes with newsgroups indexes 
@@ -108,7 +113,7 @@ test = sparse.csr_matrix(test_sparse)
 test_np = csr_matrix.toarray(test)
 test_np = np.delete(test_np, 0, 1) # delete 1st column (index)
 
-product = [[0 for x in range(20)] for y in range(6774)]
+product = [[0 for x in range(20)] for y in range(2400)]
 product = np.array(product)
 
 print(lh_np.shape)
