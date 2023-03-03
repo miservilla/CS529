@@ -7,6 +7,8 @@ from numpy import asarray
 from numpy import savetxt
 from numpy import loadtxt
 import math
+import matplotlib.pyplot as plt
+from collections import Counter
 
 lh_np = loadtxt('Project_2/lh_np.csv', delimiter=',')
 prior = lh_np[:, 61188]
@@ -57,3 +59,15 @@ for i in range(2400):
         accuracy_count += 1
 
 print(accuracy_count / 2400)
+
+c = Counter(zip(result.copy(),y.copy()))
+s = [10*c[(results,yy)] for results,yy in zip(result,y)]
+
+
+plt.scatter(result, y, s=s)
+plt.locator_params(axis="both", integer=True, tight=True)
+
+plt.ylim(0,21)
+plt.xlim(0,21)
+
+plt.show()
