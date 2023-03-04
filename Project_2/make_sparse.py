@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 # df = pd.read_csv('/home/michaelservilla/CS529/Project_2/training.csv', sep=',')
 # df = df.drop(df.columns[0], axis=1)
 
-train = genfromtxt('/home/michaelservilla/CS529/Project_2/training.csv', delimiter=',')
+train = genfromtxt('Project_2/training.csv', delimiter=',')
 # test = genfromtxt(
 #     '/home/michaelservilla/CS529/Project_2/testing.csv', delimiter=',')
 # train = np.delete(train,0,1)
@@ -20,7 +20,7 @@ print(train)
 print(train[:, 0])
 print(train.data.shape)
 
-split = len(train) * 0.80
+split = round(len(train) * 0.80)
 print(split)
 indices = np.random.permutation(train.shape[0])
 training_idx, test_idx = indices[:split], indices[split:]

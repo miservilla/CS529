@@ -117,7 +117,7 @@ def build_MAP_MLE(lh, beta): #Uses global values
 # Getting MAP and MLE values for beta = v_total 
 lh = build_MAP_MLE([[0 for x in range(v_total+1)] for y in range(unique_targets+1)], beta=v_total) 
 
-# Turning lh into an array and then saving it to a file 
+# Turning lh into an array and then saving it to a file (np ~ numpy)
 lh_np = np.asarray(lh)
 lh_np = np.delete(lh_np, 0, 0) # delete row 0, all zero's
 savetxt('Project_2/lh_np.csv', lh_np, delimiter=',')
@@ -133,19 +133,3 @@ TODO here
 
 
 '''
-
-
-
-# *************************************** Not sure what you're doing here????? *****************************************************
-test_sparse = sparse.load_npz('Project_2/csr_test.csv.npz')
-test = sparse.csr_matrix(test_sparse)
-test_np = csr_matrix.toarray(test)
-test_np = np.delete(test_np, 0, 1) # delete 1st column (index)
-
-product = [[0 for x in range(20)] for y in range(2400)]
-product = np.array(product)
-
-print()
-print(lh_np.shape)
-print(test_np.shape)
-print(product.shape)       
