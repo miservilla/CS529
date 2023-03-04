@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 # df = pd.read_csv('/home/michaelservilla/CS529/Project_2/training.csv', sep=',')
 # df = df.drop(df.columns[0], axis=1)
 
-train = genfromtxt('Project_2/training.csv', delimiter=',')
+train = genfromtxt('Project_2/lor.csv', delimiter=',')
 # test = genfromtxt(
 #     '/home/michaelservilla/CS529/Project_2/testing.csv', delimiter=',')
 # train = np.delete(train,0,1)

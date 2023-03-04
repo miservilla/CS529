@@ -1,12 +1,5 @@
 import pandas as pd
-from scipy.sparse import csr_matrix
-from scipy import sparse
 import numpy as np
-from numpy import genfromtxt
-from numpy import asarray
-from numpy import savetxt
-from numpy import loadtxt
-import math
 from sklearn.feature_extraction.text import CountVectorizer
 from bidict import bidict
 
@@ -42,8 +35,6 @@ label_map = {}
 for i, char in enumerate(char_names):
     label_map[char] = i
 label_map = bidict(label_map)
-print(label_map["Frodo"])
-print(label_map.inverse[0])
 df_dtm["class_id"] = df_dtm["author"].map(label_map) + 1
 print(df_dtm[['author', 'class_id']][:70])
 df_dtm.drop(['author'],axis=1, inplace=True)

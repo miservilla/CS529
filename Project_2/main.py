@@ -51,10 +51,15 @@ train_sparse = sparse.load_npz(
 
 # Adjust these global values for specific training set
 train = sparse.csr_matrix(train_sparse) # Traing data as sparce matrix
-unique_targets = 20 # Number of possible targets (number of news groups)
+print(train.shape)
+
+unique_targets = train[np.argmax(train[:, -1]), -1] # Number of possible targets
+#(number of news groups) based on last column values
 total_docs = train.shape[0] # Number of documents in trianing set
-v_total = 61188 # Number of unique words in training set
-column_count = train.shape[1] # Number of columns prior to removing unneeded index and target columns
+v_total = train.shape[1] - 2  # Number of unique words in training set, need to 
+#drop index and class columns, so - 2
+column_count = train.shape[1] # Number of columns prior to removing unneeded 
+#index and target columns
 
 
 def mle(yk_docs_cnt, total_docs):
@@ -67,44 +72,44 @@ def map(x_i, yk_words, v_total):
     return ((x_i + (alpha(v_total) - 1)) / (yk_words + ((alpha(v_total)-1) * v_total))) # likelihood
 
 def build_MAP_MLE(lh, beta): #Uses global values
-    df = pd.DataFrame(columns=['index', 'newsgroups'])
+    df = pd.DataFrame(columns=['index', 'class_id'])
 
     for i in range(total_docs):
-        df.loc[len(df.index)] = [i, train[i, 61189]] # df starts at index 0
+        df.loc[len(df.index)] = [i, train[i, column_count - 1]] # df starts at index 0
 
     dataframes = {} # Dictionary of dataframes with newsgroups indexes 
     for i in range(1, unique_targets+1):
-        dataframes["df_{0}".format(i)] = df[df['newsgroups'] == i]
+        dataframes["df_{0}".format(i)] = df[df['class_id'] == i]
 
     wrd_per_NG = csr_matrix((unique_targets,v_total+1), dtype=int)
 
-    sparse_newsgroups = {} # Dictionary of sparse matrix for each newsgroup
+    sparse_classes = {} # Dictionary of sparse matrix for each newsgroup
     count = 1
 
     for dataframe in dataframes:
         print()
-        print("News Group:" + str(dataframes[dataframe].iloc[0]['newsgroups']))
+        print("Class:" + str(dataframes[dataframe].iloc[0]['class_id']))
         print("Size: " + str(len(dataframes[dataframe])))
         yk_docs_cnt = len(dataframes[dataframe])
-        index = str(dataframes[dataframe].iloc[0]['newsgroups'])
+        index = str(dataframes[dataframe].iloc[0]['class_id'])
 
         # Summing each row associated with current news group
-        sparse_newsgroups["{0}".format(index)] = csr_matrix((1,column_count), dtype=int)
+        sparse_classes["{0}".format(index)] = csr_matrix((1,column_count), dtype=int)
         for row in dataframes[dataframe]['index']:
-            sparse_newsgroups[index] = train[row].toarray() + sparse_newsgroups[index]
+            sparse_classes[index] = train[row].toarray() + sparse_classes[index]
 
         # Deleting 1st and last column as they are index and news groups (not words)
-        sparse_newsgroups[index] = np.delete(sparse_newsgroups[index], 0)
-        sparse_newsgroups[index] = np.delete(sparse_newsgroups[index], v_total)
-        print(sparse_newsgroups[index])
+        sparse_classes[index] = np.delete(sparse_classes[index], 0)
+        sparse_classes[index] = np.delete(sparse_classes[index], v_total)
+        print(sparse_classes[index])
         
-        yk_words = np.sum(sparse_newsgroups[index]) # Sum of all words in current news group
+        yk_words = np.sum(sparse_classes[index]) # Sum of all words in current news group
         
         for i in range(v_total):
-            x_i = sparse_newsgroups[index][0, i]
+            x_i = sparse_classes[index][0, i]
             lh[count][i] = map(x_i, yk_words, beta)
 
-        lh[count][61188] = mle(yk_docs_cnt, total_docs)
+        lh[count][v_total] = mle(yk_docs_cnt, total_docs)
         # print("Test MAP: " + str(lh[count][0]) + " with x_i of " + str(sparse_newsgroups[index][0, 0]))
         # print("word count of " + str(yk_words) + " and v_total of " + str(v_total))
         # print("MLE: " + str(lh[count][61188]))
