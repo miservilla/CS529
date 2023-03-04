@@ -71,15 +71,15 @@ for i in range(test_np_len):
 print(accuracy_count / test_np_len)
 
 
-# # Creating scatter plot of results 
-# # Y-axis: True values representing news groups
-# # X-axis: Predicted values representing news groups
-# c = Counter(zip(result.copy(),y.copy()))
-# # Creating list to increase size of points with greater frequency 
-# s = [10*c[(results,yy)] for results,yy in zip(result,y)] 
-# # Creating actual plot and showing it
-# plt.scatter(result, y, s=s)
-# plt.locator_params(axis="both", integer=True, tight=True)
-# plt.ylim(0,result.shape[0] + 1)
-# plt.xlim(0,result.shape[0] + 1)
-# plt.show()
+# Creating scatter plot of results 
+# Y-axis: True values representing news groups
+# X-axis: Predicted values representing news groups
+c = Counter(zip(result.copy(),y.copy()))
+# Creating list to increase size of points with greater frequency 
+s = [10*c[(results,yy)] for results,yy in zip(result,y)] 
+# Creating actual plot and showing it
+plt.scatter(result, y, s=s)
+plt.locator_params(axis="both", integer=True, tight=True)
+plt.ylim(0,lh_np.shape[0] + 1)
+plt.xlim(0,result.shape[0] + 1)
+plt.show()

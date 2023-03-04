@@ -20,7 +20,7 @@ print(train)
 print(train[:, 0])
 print(train.data.shape)
 
-split = round(len(train) * 0.80)
+split = round(len(train) * .8)
 print(split)
 indices = np.random.permutation(train.shape[0])
 training_idx, test_idx = indices[:split], indices[split:]
