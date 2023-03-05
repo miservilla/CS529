@@ -46,7 +46,7 @@ import math
 
 # Loading training data 
 train_sparse = sparse.load_npz(
-    'Project_2/csr_train.csv.npz')
+    'Project_2/csr_train.csv_lg.npz')
 
 
 # Adjust these global values for specific training set
@@ -68,8 +68,8 @@ def mle(yk_docs_cnt, total_docs):
 def alpha(v_total):
     return(1 + (1 / v_total)) # alpha
 
-def map(x_i, yk_words, v_total):
-    return ((x_i + (alpha(v_total) - 1)) / (yk_words + ((alpha(v_total)-1) * v_total))) # likelihood
+def map(x_i, yk_words, v_total, beta):
+    return ((x_i + (alpha(beta) - 1)) / (yk_words + ((alpha(beta)-1) * v_total))) # likelihood
 
 def build_MAP_MLE(lh, beta): #Uses global values
     df = pd.DataFrame(columns=['index', 'class_id'])
@@ -87,9 +87,9 @@ def build_MAP_MLE(lh, beta): #Uses global values
     count = 1
 
     for dataframe in dataframes:
-        print()
-        print("Class:" + str(dataframes[dataframe].iloc[0]['class_id']))
-        print("Size: " + str(len(dataframes[dataframe])))
+        # print()
+        # print("Class:" + str(dataframes[dataframe].iloc[0]['class_id']))
+        # print("Size: " + str(len(dataframes[dataframe])))
         yk_docs_cnt = len(dataframes[dataframe])
         index = str(dataframes[dataframe].iloc[0]['class_id'])
 
@@ -101,13 +101,13 @@ def build_MAP_MLE(lh, beta): #Uses global values
         # Deleting 1st and last column as they are index and news groups (not words)
         sparse_classes[index] = np.delete(sparse_classes[index], 0)
         sparse_classes[index] = np.delete(sparse_classes[index], v_total)
-        print(sparse_classes[index])
+        # print(sparse_classes[index])
         
         yk_words = np.sum(sparse_classes[index]) # Sum of all words in current news group
         
         for i in range(v_total):
             x_i = sparse_classes[index][0, i]
-            lh[count][i] = map(x_i, yk_words, beta)
+            lh[count][i] = map(x_i, yk_words, v_total, beta)
 
         lh[count][v_total] = mle(yk_docs_cnt, total_docs)
         # print("Test MAP: " + str(lh[count][0]) + " with x_i of " + str(sparse_newsgroups[index][0, 0]))
@@ -138,3 +138,19 @@ TODO here
 
 
 '''
+
+# Setting up a range for testing beta values
+beta_testing = {}
+
+beta_range = np.linspace(100000,1,50)
+print(beta_range)
+b_length = len(beta_range)
+
+for i in range(b_length):
+    print(round(beta_range[i]))
+    current_beta = build_MAP_MLE([[0 for x in range(v_total+1)] for y in range(unique_targets+1)], beta=round(beta_range[i])) 
+    current_beta = np.asarray(current_beta)
+    current_beta = np.delete(current_beta, 0, 0) # delete row 0, all zero's
+    savetxt('Project_2/Diff_Beta_Values/beta_'+str(i)+'.csv', current_beta, delimiter=',')
+
+
