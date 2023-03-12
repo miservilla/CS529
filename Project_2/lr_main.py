@@ -30,7 +30,7 @@ v_total = train.shape[1] - 2  # Number of unique words in training set, need to
 column_count = train.shape[1] # Number of columns prior to removing unneeded 
 #index and target columns
 Ys = train[:,column_count-1] # A m by 1 vector of true classifications
-learning = 0.5
+learning = 0.01
 penalty = 0.01
 
 # Getting matrix of Xs 
@@ -70,19 +70,22 @@ def get_likelihood(Yl, weights, Xljs):
 
 
 def minimize_likelihood(last_likelihood, weights_matrix):
-    print()
-    print("****************************************************************")
+    # print()
+    # print("****************************************************************")
 
     weights_matrix2 = np.zeros(shape=(unique_targets,v_total+1))
 
     predict = get_aprox_prediction(weights_matrix)
     # print(predict)
 
-    for i in range(unique_targets): # Updating weights for each class
+    # for i in range(unique_targets): # Updating weights for each class
         # print()
         # print("Class: " + str(i+1))
         # print(last_weights[cur_class])
-        weights_matrix2[i] = weights_matrix[i] + (  learning * (((delta - predict) * Xs).sum(axis=0) - (penalty * weights_matrix[i])))
+        # weights_matrix2[i] = weights_matrix[i] + (  learning * (((delta - predict) * Xs).sum(axis=0) - (penalty * weights_matrix[i])))
+
+    weights_matrix2 = weights_matrix + (  learning * (((delta - predict) * Xs) - (penalty * weights_matrix)))
+
 
         # print(weights_matrix)
         # print(weights_matrix2)
@@ -92,10 +95,10 @@ def minimize_likelihood(last_likelihood, weights_matrix):
     for j in range(total_docs):
         likelihood = likelihood + get_likelihood(Ys[j,0],weights_matrix2[Ys[j,0]-1,:], Xs[j,:].toarray())
 
-    print()
-    print("Likelihood: " + str(likelihood))
+    # print()
+    # print("Likelihood: " + str(likelihood))
 
-    if last_likelihood > likelihood:
+    if last_likelihood < likelihood:
         return likelihood, weights_matrix2
     else:
         return last_likelihood, weights_matrix
@@ -103,6 +106,22 @@ def minimize_likelihood(last_likelihood, weights_matrix):
     
 
 def build_weights(): # Returns array of maximizing weights (w)
+
+    df = pd.DataFrame(columns=['index', 'class_id'])
+
+    for i in range(total_docs):
+        df.loc[len(df.index)] = [i, train[i, column_count - 1]] # df starts at index 0
+
+    dataframes = {} # Dictionary of dataframes with newsgroups indexes 
+    for i in range(1, unique_targets+1):
+        dataframes["df_{0}".format(i)] = df[df['class_id'] == i]
+
+    for dataframe in dataframes:
+        print()
+        print("Class:" + str(dataframes[dataframe].iloc[0]['class_id']))
+        print("Size: " + str(len(dataframes[dataframe])))
+        print(dataframes[dataframe])
+
 
     weights_matrix = np.zeros(shape=(unique_targets,v_total+1))
 
@@ -117,10 +136,10 @@ def build_weights(): # Returns array of maximizing weights (w)
     print()
     print("Likelihood: " + str(likelihood))
 
-    last_likelihood = likelihood+1
+    last_likelihood = likelihood-1
     current_likelihood = likelihood
 
-    while last_likelihood > current_likelihood:
+    while last_likelihood < current_likelihood:
         last_likelihood = current_likelihood.copy()
         current_likelihood, weights_matrix = minimize_likelihood(last_likelihood, weights_matrix)
 
@@ -131,5 +150,5 @@ def build_weights(): # Returns array of maximizing weights (w)
 
 weights = build_weights()
 
-print(weights)
+# print(weights)
 print(get_aprox_prediction(weights))
