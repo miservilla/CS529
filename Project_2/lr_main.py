@@ -69,6 +69,9 @@ def get_aprox_prediction(weights): # Returns the P(Y|W,X) from in the PDF
     return predict
 
 def get_likelihood(Yl, weights, Xljs):
+    print(weights)
+    print(Xljs[0])
+    print(np.dot(weights,Xljs[0]))
     return int(Yl)* np.dot(weights,Xljs[0])- np.log(1 + np.exp(np.float128(np.dot(weights,Xljs[0]))))# Conditional likelihood equation from PDF
 
 
@@ -158,3 +161,5 @@ print(get_aprox_prediction(weights)) # This pirnts out the final predictions whe
 # the training examples (documents used in training), so each value shown is the probability that the document (column) is from news group (row)
 # for the small set it prints as expected for the final weights however there is an overflow issue for the large database
 # so we might have to normalize the large data set in some way in order to bring down the size of the values
+
+# Nevermind there seems to be wierdness going on with the weights
