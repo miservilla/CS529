@@ -69,6 +69,7 @@ def get_aprox_prediction(weights): # Returns the P(Y|W,X) from in the PDF
     return predict
 
 def get_likelihood(Yl, weights, Xljs):
+    print(Yl)
     print(weights)
     print(Xljs[0])
     print(np.dot(weights,Xljs[0]))
@@ -137,17 +138,18 @@ def build_weights(): # Returns array of maximizing weights (w)
     likelihood = 0
 
     for j in range(total_docs):
-        likelihood = likelihood + get_likelihood(Ys[j,0],weights_matrix[Ys[j,0],:], Xs[j,:].toarray())
+        target = Ys[j,0]
+        likelihood = likelihood + get_likelihood(target,weights_matrix[target,:], Xs[j,:].toarray())
 
     print()
     print("Likelihood: " + str(likelihood))
 
-    last_likelihood = likelihood-1
-    current_likelihood = likelihood
+    # last_likelihood = likelihood-1
+    # current_likelihood = likelihood
 
-    while last_likelihood < current_likelihood:
-        last_likelihood = current_likelihood.copy()
-        current_likelihood, weights_matrix = minimize_likelihood(last_likelihood, weights_matrix)
+    # while last_likelihood < current_likelihood:
+    #     last_likelihood = current_likelihood.copy()
+    #     current_likelihood, weights_matrix = minimize_likelihood(last_likelihood, weights_matrix)
 
     return weights_matrix
 
