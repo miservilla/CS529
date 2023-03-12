@@ -154,4 +154,6 @@ def build_weights(): # Returns array of maximizing weights (w)
 weights = build_weights()
 
 # print(weights)
-print(get_aprox_prediction(weights))
+print(get_aprox_prediction(weights)) # This pirnts out the final predictions where rows are the classes (news goups) and  columns are 
+# the training examples (documents used in training), so each value shown is the probability that the document (column) is from news group (row)
+# for the small set it prints as expected for the final weights however there is an overflow issue for the large database
