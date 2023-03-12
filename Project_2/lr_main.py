@@ -100,7 +100,8 @@ def minimize_likelihood(last_likelihood, weights_matrix):
     likelihood = 0
 
     for j in range(total_docs):
-        likelihood = likelihood + get_likelihood(Ys[j,0],weights_matrix2[Ys[j,0],:], Xs[j,:].toarray())
+        target = Ys[j,0]
+        likelihood = likelihood + get_likelihood(target ,weights_matrix2[target,:], Xs[j,:].toarray())
 
     # print()
     # print("Likelihood: " + str(likelihood))
