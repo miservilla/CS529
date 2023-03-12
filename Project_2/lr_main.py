@@ -15,7 +15,7 @@ delta = 1 or 0 depending on if Y^l = yj or Y^l !+ yj
 
 # Loading training data 
 train_sparse = sparse.load_npz(
-    'Project_2/csr_train.csv_sm.npz')
+    'Project_2/csr_train.csv_lg.npz')
 
 
 # Adjust these global values for specific training set
@@ -29,7 +29,8 @@ v_total = train.shape[1] - 2  # Number of unique words in training set, need to
 #drop index and class columns, so - 2
 column_count = train.shape[1] # Number of columns prior to removing unneeded 
 #index and target columns
-Ys = train[:,column_count-1] # A m by 1 vector of true classifications
+Ys = train[:,column_count-1].toarray() # A m by 1 vector of true classifications
+Ys -= 1
 learning = 0.01
 penalty = 0.01
 
@@ -43,7 +44,7 @@ def get_delta():
     delta_matrix = np.zeros(shape=(unique_targets, total_docs))
     for i in range(delta_matrix.shape[0]):
         for j in range(delta_matrix.shape[1]):
-            if i+1 == Ys[j,0]:
+            if i == Ys[j,0]:
                 delta_matrix[i,j] = 1
 
     # print(delta_matrix)
@@ -57,7 +58,9 @@ def set_weights(Xs_length): # Initializing weights with random floats
 #     return current_weights + (  learning * (((delta - aprox_prediction) * Xs).sum(axis=0) - (penalty * current_weights)))
 
 def get_aprox_prediction(weights): # Returns the P(Y|W,X) from in the PDF
-    predict = np.exp(np.dot(weights,np.transpose(Xs).toarray()))
+    # print("In predict, at start")
+    predict = np.exp(np.float128(weights*np.transpose(Xs)))
+    # print("in predict, passed exp(WXt)")
     predict[unique_targets-1,:] = 1
     # print(predict)
     pt = np.transpose(predict)
@@ -66,7 +69,7 @@ def get_aprox_prediction(weights): # Returns the P(Y|W,X) from in the PDF
     return predict
 
 def get_likelihood(Yl, weights, Xljs):
-    return int(Yl)*np.sum(weights*Xljs) - np.log(1 + np.exp(np.float128( np.sum(weights*Xljs)))) # Conditional likelihood equation from PDF
+    return int(Yl)* np.dot(weights,Xljs[0])- np.log(1 + np.exp(np.dot(weights,Xljs[0])))# Conditional likelihood equation from PDF
 
 
 def minimize_likelihood(last_likelihood, weights_matrix):
@@ -93,7 +96,7 @@ def minimize_likelihood(last_likelihood, weights_matrix):
     likelihood = 0
 
     for j in range(total_docs):
-        likelihood = likelihood + get_likelihood(Ys[j,0],weights_matrix2[Ys[j,0]-1,:], Xs[j,:].toarray())
+        likelihood = likelihood + get_likelihood(Ys[j,0],weights_matrix2[Ys[j,0],:], Xs[j,:].toarray())
 
     # print()
     # print("Likelihood: " + str(likelihood))
@@ -131,7 +134,7 @@ def build_weights(): # Returns array of maximizing weights (w)
     likelihood = 0
 
     for j in range(total_docs):
-        likelihood = likelihood + get_likelihood(Ys[j,0],weights_matrix[Ys[j,0]-1,:], Xs[j,:].toarray())
+        likelihood = likelihood + get_likelihood(Ys[j,0],weights_matrix[Ys[j,0],:], Xs[j,:].toarray())
 
     print()
     print("Likelihood: " + str(likelihood))
