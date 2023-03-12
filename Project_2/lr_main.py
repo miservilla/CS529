@@ -12,11 +12,10 @@ delta = 1 or 0 depending on if Y^l = yj or Y^l !+ yj
 
 '''
 
-
+''' Global Variables Start '''
 # Loading training data 
 train_sparse = sparse.load_npz(
-    'Project_2/csr_train.csv_lg.npz')
-
+    'Project_2/csr_train.csv_sm.npz')
 
 # Adjust these global values for specific training set
 train = sparse.csr_matrix(train_sparse) # Traing data as sparce matrix
@@ -33,6 +32,7 @@ Ys = train[:,column_count-1].toarray() # A m by 1 vector of true classifications
 Ys -= 1
 learning = 0.01
 penalty = 0.01
+max_iterations = 10
 
 # Getting matrix of Xs 
 Xs = train.copy()
@@ -50,6 +50,8 @@ def get_delta():
     # print(delta_matrix)
     return delta_matrix
 delta = get_delta()
+''' Global Variables End '''
+
 
 def set_weights(Xs_length): # Initializing weights with random floats
     return np.random.rand(1, Xs_length)
@@ -58,9 +60,8 @@ def set_weights(Xs_length): # Initializing weights with random floats
 #     return current_weights + (  learning * (((delta - aprox_prediction) * Xs).sum(axis=0) - (penalty * current_weights)))
 
 def get_aprox_prediction(weights): # Returns the P(Y|W,X) from in the PDF
-    # print("In predict, at start")
+    print(np.exp(np.float128((weights*np.transpose(Xs)).max())))
     predict = np.exp(np.float128(weights*np.transpose(Xs)))
-    # print("in predict, passed exp(WXt)")
     predict[unique_targets-1,:] = 1
     # print(predict)
     pt = np.transpose(predict)
@@ -69,10 +70,10 @@ def get_aprox_prediction(weights): # Returns the P(Y|W,X) from in the PDF
     return predict
 
 def get_likelihood(Yl, weights, Xljs):
-    print(Yl)
-    print(weights)
-    print(Xljs[0])
-    print(np.dot(weights,Xljs[0]))
+    # print(Yl)
+    # print(weights)
+    # print(Xljs[0])
+    # print(np.dot(weights,Xljs[0]))
     return int(Yl)* np.dot(weights,Xljs[0])- np.log(1 + np.exp(np.float128(np.dot(weights,Xljs[0]))))# Conditional likelihood equation from PDF
 
 
@@ -103,8 +104,8 @@ def minimize_likelihood(last_likelihood, weights_matrix):
         target = Ys[j,0]
         likelihood = likelihood + get_likelihood(target ,weights_matrix2[target,:], Xs[j,:].toarray())
 
-    # print()
-    # print("Likelihood: " + str(likelihood))
+    print()
+    print("Likelihood: " + str(likelihood))
 
     if last_likelihood < likelihood:
         return likelihood, weights_matrix2
@@ -145,12 +146,14 @@ def build_weights(): # Returns array of maximizing weights (w)
     print()
     print("Likelihood: " + str(likelihood))
 
-    # last_likelihood = likelihood-1
-    # current_likelihood = likelihood
+    last_likelihood = likelihood-1
+    current_likelihood = likelihood
+    iter = 0
 
-    # while last_likelihood < current_likelihood:
-    #     last_likelihood = current_likelihood.copy()
-    #     current_likelihood, weights_matrix = minimize_likelihood(last_likelihood, weights_matrix)
+    while last_likelihood < current_likelihood and iter < max_iterations:
+        last_likelihood = current_likelihood.copy()
+        current_likelihood, weights_matrix = minimize_likelihood(last_likelihood, weights_matrix)
+        iter += 1
 
     return weights_matrix
 
@@ -160,7 +163,7 @@ def build_weights(): # Returns array of maximizing weights (w)
 weights = build_weights()
 
 # print(weights)
-print(get_aprox_prediction(weights)) # This pirnts out the final predictions where rows are the classes (news goups) and  columns are 
+get_aprox_prediction(weights)# This pirnts out the final predictions where rows are the classes (news goups) and  columns are 
 # the training examples (documents used in training), so each value shown is the probability that the document (column) is from news group (row)
 # for the small set it prints as expected for the final weights however there is an overflow issue for the large database
 # so we might have to normalize the large data set in some way in order to bring down the size of the values
