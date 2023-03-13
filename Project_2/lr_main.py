@@ -32,7 +32,7 @@ Ys = train[:,column_count-1].toarray() # A m by 1 vector of true classifications
 Ys -= 1
 learning = 0.01
 penalty = 0.01
-max_iterations = 10
+max_iterations = 100000
 
 # Getting matrix of Xs 
 Xs = train.copy()

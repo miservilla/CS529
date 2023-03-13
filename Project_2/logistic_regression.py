@@ -12,7 +12,7 @@ k - number of classes in training set
 n - number of attributes (features or columns) each example (document or row)
     has
 eta - the learning rate or step size
-lambda - the penalty term used in regularization
+lambda(lamb) - the penalty term used in regularization
 delta - a k x m matrix where delta_ji = 1 if jth training value, Y^i = y_j and 
         delta_ji = 0 otherwise
 X - an m x (n+1) training set without index or class columns, 1 based index,
@@ -20,9 +20,9 @@ X - an m x (n+1) training set without index or class columns, 1 based index,
 Y - an m x 1 vector(matrix) of true classifications for each example
 W - a k x (n+1) matrix of weights
 """
-iter = 10
-eta = 0.001
-
+iter = 1000
+eta = 0.1
+lamb = 0.01
 #load compressed training set
 train_sparse = sparse.load_npz(
     '/home/michaelservilla/CS529/Project_2/csr_train.csv_sm.npz')
@@ -40,7 +40,7 @@ X = X.toarray()
 for i in range(X.shape[0]):
     X[i][0] = 1
 
-
+X_class = sparse.csr_matrix(train_sparse)
 
 #number of classes or target values
 k = np.max(train_sparse[:, -1])
@@ -51,44 +51,27 @@ n = X.shape[1]
 #initialize weight matrix with zeros
 W = np.zeros((k, n), dtype=float)
 
-#training set without index or class columns to make delta array
+#making delta array with Y, all 0 except indecies with value (1, 2, or 3)
 delta = np.zeros((k, X.shape[0]), dtype=int)
-X_less = sparse.csr_matrix(train_sparse[:, 1:-1])
-print(X_less)
-indices = X_less.tolil().rows
-print(indices.shape)
-print(indices)
-print(indices[0][0])
-print(len(indices[0]))
-print(X_less[0,17])
-# for i in range(indices.shape[0]):
-#     for j in range(len(indices[i])):
-#         print(i, j, indices[i][j])
-#         print(X_less[i, indices[i][j]])
-#         if X_less[i, indices[i][j]] == 1:
-#             delta[0][indices[i][j]] = 1
-#         elif X_less[i, indices[i][j]] == 2:
-#             delta[1][indices[i][j]] = 1
-#         else:
-#             delta[2][indices[i][j]] = 1
-
+for i in range(16):
+    if Y[i] == 1:
+        delta[0][i] = 1
+    elif Y[i] == 2:
+        delta[1][i] = 1
+    else:
+        delta[2][i] = 1
 print(delta)
+
+#making prediction array
+def make_pred(W):
+    prediction = np.exp(np.dot(W,np.transpose(X)))
+    prediction[k-1, :] = 1
+    pt = np.transpose(prediction)
+    prediction = np.transpose(pt/pt.sum(axis=1)[:, None])
+    return prediction
 
 #initialize likelihood sum
 lh_sum = 0
-
-# print(X.shape)
-# print(X)
-# print(Y)
-# print(k)
-# print(n)
-# print(W.shape)
-# print(X.shape)
-# print(W[0])
-# print()
-# print(X[0])
-# print(X.ndim)
-# print(W.ndim)
 
 def likelihood(W, X, Y):
     lh_sum = 0
@@ -98,9 +81,33 @@ def likelihood(W, X, Y):
         lh = a * (np.dot(W[a-1], X[i])) - \
             np.log(1+np.exp(np.dot(W[a-1], X[i])))
         lh_sum += lh
+    return lh_sum
+
+
+lh_sum = likelihood(W, X, Y)
+current_weights = W.copy()
+for i in range(iter):
+    W = W + eta * (np.dot((delta - make_pred(W)), X) - (lamb * W))
+    lh_new = likelihood(W, X, Y)
+    if lh_sum < lh_new:
+        lh_sum = lh_new
+        current_weights = W.copy()
     print(lh_sum)
 
-# for i in range(iter):
-#     for j in range(W.shape[0]):
-#         W[j] = W[j] + eta * ()
-# likelihood(W, X, Y)
+
+a = make_pred(current_weights)
+
+
+
+for i in range(16):
+    print("%.4f" % Y[i], end=" ")
+print()
+
+for i in range(16):
+    print("%.4f" % a[0][i], end=" ")
+print()
+for i in range(16):
+    print("%.4f" % a[1][i], end=" ")
+print()
+for i in range(16):
+    print("%.4f" % a[2][i], end=" ")
