@@ -15,10 +15,10 @@ delta = 1 or 0 depending on if Y^l = yj or Y^l !+ yj
 ''' Global Variables Start '''
 # Loading training data 
 train_sparse = sparse.load_npz(
-    'Project_2/csr_train.csv_sm.npz')
+    '/home/michaelservilla/CS529/Project_2/csr_train.csv_sm.npz')
 
 # Adjust these global values for specific training set
-train = sparse.csr_matrix(train_sparse) # Traing data as sparce matrix
+train = sparse.csr_matrix(train_sparse) # Traing data as sparse matrix
 print(train.shape)
 
 unique_targets = train[np.argmax(train[:, -1]), -1] # Number of possible targets
@@ -59,7 +59,7 @@ def set_weights(Xs_length): # Initializing weights with random floats
 # def update_weights(current_weights, learning, penalty, aprox_prediction):    
 #     return current_weights + (  learning * (((delta - aprox_prediction) * Xs).sum(axis=0) - (penalty * current_weights)))
 
-def get_aprox_prediction(weights): # Returns the P(Y|W,X) from in the PDF
+def get_approx_prediction(weights): # Returns the P(Y|W,X) from in the PDF
     print(np.exp(np.float128((weights*np.transpose(Xs)).max())))
     predict = np.exp(np.float128(weights*np.transpose(Xs)))
     predict[unique_targets-1,:] = 1
@@ -83,7 +83,7 @@ def minimize_likelihood(last_likelihood, weights_matrix):
 
     weights_matrix2 = np.zeros(shape=(unique_targets,v_total+1))
 
-    predict = get_aprox_prediction(weights_matrix)
+    predict = get_approx_prediction(weights_matrix)
     # print(predict)
 
     # for i in range(unique_targets): # Updating weights for each class
@@ -163,9 +163,9 @@ def build_weights(): # Returns array of maximizing weights (w)
 weights = build_weights()
 
 # print(weights)
-get_aprox_prediction(weights)# This pirnts out the final predictions where rows are the classes (news goups) and  columns are 
+get_approx_prediction(weights)# This prints out the final predictions where rows are the classes (news goups) and  columns are 
 # the training examples (documents used in training), so each value shown is the probability that the document (column) is from news group (row)
 # for the small set it prints as expected for the final weights however there is an overflow issue for the large database
 # so we might have to normalize the large data set in some way in order to bring down the size of the values
 
-# Nevermind there seems to be wierdness going on with the weights
+# Nevermind there seems to be weirdness going on with the weights
