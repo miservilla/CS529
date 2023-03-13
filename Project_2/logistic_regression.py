@@ -20,27 +20,46 @@ X - an m x (n+1) training set without index or class columns, 1 based index,
 Y - an m x 1 vector(matrix) of true classifications for each example
 W - a k x (n+1) matrix of weights
 """
-iter = 1000
+iter = 100
 eta = 0.1
 lamb = 0.01
 #load compressed training set
 train_sparse = sparse.load_npz(
     '/home/michaelservilla/CS529/Project_2/csr_train.csv_sm.npz')
 
-# print(train_sparse.shape)
-# print(train_sparse)
+print(train_sparse.shape)
+print(train_sparse)
 
-#vector of true classes for each example (row)
+#load compressed testing set
+test_sparse = sparse.load_npz(
+    '/home/michaelservilla/CS529/Project_2/csr_test.csv_sm.npz')
+
+print(test_sparse.shape)
+print(test_sparse)
+
+#vector of true classes for each example (row) test
+Y_test = test_sparse[:, -1]
+Y_test = Y_test.toarray()
+print(Y_test.shape)
+print(Y_test)
+
+#vector of true classes for each example (row) train
 Y = train_sparse[:, -1]
 Y = Y.toarray()
+print(Y.shape)
+print(Y)
+
+#testing set without class columns
+X_test = sparse.csr_matrix(test_sparse[:, 0:-1])
+X_test = X_test.toarray()
+for i in range(X_test.shape[0]):
+    X_test[i][0] = 1
 
 #training set without class columns
 X = sparse.csr_matrix(train_sparse[:, 0:-1])
 X = X.toarray()
 for i in range(X.shape[0]):
     X[i][0] = 1
-
-X_class = sparse.csr_matrix(train_sparse)
 
 #number of classes or target values
 k = np.max(train_sparse[:, -1])
@@ -63,16 +82,14 @@ for i in range(16):
 print(delta)
 
 #making prediction array
-def make_pred(W):
-    prediction = np.exp(np.dot(W,np.transpose(X)))
+def make_pred(W, X_array):
+    prediction = np.exp(np.dot(W,np.transpose(X_array)))
     prediction[k-1, :] = 1
     pt = np.transpose(prediction)
     prediction = np.transpose(pt/pt.sum(axis=1)[:, None])
     return prediction
 
-#initialize likelihood sum
-lh_sum = 0
-
+#makes conditional likelihood estimate
 def likelihood(W, X, Y):
     lh_sum = 0
     for i in range(X.shape[0]):
@@ -83,11 +100,15 @@ def likelihood(W, X, Y):
         lh_sum += lh
     return lh_sum
 
-
+#initialize likelihood sum
 lh_sum = likelihood(W, X, Y)
+
+#saves initial current weights
 current_weights = W.copy()
+
+#runs gradient ascent
 for i in range(iter):
-    W = W + eta * (np.dot((delta - make_pred(W)), X) - (lamb * W))
+    W = W + eta * (np.dot((delta - make_pred(W, X)), X) - (lamb * W))
     lh_new = likelihood(W, X, Y)
     if lh_sum < lh_new:
         lh_sum = lh_new
@@ -95,7 +116,7 @@ for i in range(iter):
     print(lh_sum)
 
 
-a = make_pred(current_weights)
+a = make_pred(current_weights, X)
 
 
 
@@ -111,3 +132,19 @@ for i in range(16):
 print()
 for i in range(16):
     print("%.4f" % a[2][i], end=" ")
+
+print()
+b = make_pred(current_weights, X_test)
+
+for i in range(2):
+    print("%.4f" % Y_test[i], end=" ")
+print()
+
+for i in range(2):
+    print("%.4f" % b[0][i], end=" ")
+print()
+for i in range(2):
+    print("%.4f" % b[1][i], end=" ")
+print()
+for i in range(2):
+    print("%.4f" % b[2][i], end=" ")
