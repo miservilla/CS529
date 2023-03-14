@@ -11,13 +11,15 @@ from sklearn.model_selection import train_test_split
 # df = pd.read_csv('/home/michaelservilla/CS529/Project_2/training.csv', sep=',')
 # df = df.drop(df.columns[0], axis=1)
 
-train = genfromtxt('Project_2/lor.csv', delimiter=',')
+train = genfromtxt(
+    '/home/michaelservilla/CS529/Project_2/framingham.csv', delimiter=',')
 # test = genfromtxt(
 #     '/home/michaelservilla/CS529/Project_2/testing.csv', delimiter=',')
 # train = np.delete(train,0,1)
 print("Train before split")
 print(train)
-print(train[:, 0])
+print()
+print(train[1, :])
 print(train.data.shape)
 
 split = round(len(train) * .8)
@@ -49,7 +51,7 @@ print(test_sparse)
 print(test_sparse.shape)
 
 
-sparse.save_npz('/home/michaelservilla/CS529/Project_2/csr_train.csv.npz', train_sparse)
+sparse.save_npz('/home/michaelservilla/CS529/Project_2/csr_train.csv_CAD.npz', train_sparse)
 sparse.save_npz(
-    '/home/michaelservilla/CS529/Project_2/csr_test.csv.npz', test_sparse)
+    '/home/michaelservilla/CS529/Project_2/csr_test.csv_CAD.npz', test_sparse)
 # train_sparse = sparse.load_npz('/home/michaelservilla/CS529/Project_2/csr_train.csv.npz')
