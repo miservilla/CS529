@@ -25,14 +25,14 @@ eta = 0.1
 lambda_ = 0.01
 #load compressed training set
 train_sparse = sparse.load_npz(
-    '/home/sin_nombre/CS529/Project_2/csr_train.csv_lg.npz')
+    '/home/michaelservilla/CS529/Project_2/csr_train.csv_lg.npz')
 
 # print(train_sparse.shape)
 # print(train_sparse)
 
 #load compressed testing set
 test_sparse = sparse.load_npz(
-    '/home/sin_nombre/CS529/Project_2/csr_test.csv_lg.npz')
+    '/home/michaelservilla/CS529/Project_2/csr_test.csv_lg.npz')
 
 print(test_sparse.shape)
 print(test_sparse)
@@ -94,11 +94,7 @@ def likelihood(W, X, Y):
     lh_sum = 0
     for i in range(X.shape[0]):
         a = int((Y[i]))
-        # print(a)
-        b = (np.dot(W[a-1], X[i]))
-        c = np.log(1+np.exp(np.dot(W[a-1], X[i])))
-        lh = a * b - c
-        # lh = a * (np.dot(W[a-1], X[i])) - np.log(1+np.exp(np.dot(W[a-1], X[i])))
+        lh = a * (np.dot(W[a-1], X[i])) - np.log(1+np.exp(np.dot(W[a-1], X[i])))
         lh_sum += lh
     return lh_sum
 
