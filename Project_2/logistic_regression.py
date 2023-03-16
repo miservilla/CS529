@@ -20,41 +20,45 @@ X - an m x (n+1) training set without index or class columns, 1 based index,
 Y - an m x 1 vector(matrix) of true classifications for each example
 W - a k x (n+1) matrix of weights
 """
-iter = 10
+iter = 1
 eta = 0.1
 lambda_ = 0.01
 #load compressed training set
 train_sparse = sparse.load_npz(
-    '/home/michaelservilla/CS529/Project_2/csr_train.csv_CAD.npz')
+    '/home/sin_nombre/CS529/Project_2/csr_train.csv_lg.npz')
 
-print(train_sparse.shape)
-print(train_sparse)
+# print(train_sparse.shape)
+# print(train_sparse)
 
 #load compressed testing set
 test_sparse = sparse.load_npz(
-    '/home/michaelservilla/CS529/Project_2/csr_test.csv_CAD.npz')
+    '/home/sin_nombre/CS529/Project_2/csr_test.csv_lg.npz')
 
-# print(test_sparse.shape)
-# print(test_sparse)
+print(test_sparse.shape)
+print(test_sparse)
+
 
 #vector of true classes for each example (row) test
 Y_test = test_sparse[:, -1]
 Y_test = Y_test.toarray()
-# print(Y_test.shape)
-# print(Y_test)
+print(Y_test.shape)
+print(Y_test)
 
 #vector of true classes for each example (row) train
 Y = train_sparse[:, -1]
 Y = Y.toarray()
-print(Y.shape)
-print(Y)
-print(Y[2])
+# print(Y.shape)
+# print(Y)
 
-#testing set without class columns
+
+#testing set without class column
 X_test = sparse.csr_matrix(test_sparse[:, 0:-1])
 X_test = X_test.toarray()
 for i in range(X_test.shape[0]):
     X_test[i][0] = 1
+
+print(X_test.shape)
+print(X_test)
 
 #training set without class columns
 X = sparse.csr_matrix(train_sparse[:, 0:-1])
@@ -91,8 +95,10 @@ def likelihood(W, X, Y):
     for i in range(X.shape[0]):
         a = int((Y[i]))
         # print(a)
-        lh = a * (np.dot(W[a-1], X[i])) - \
-            np.log(1+np.exp(np.dot(W[a-1], X[i])))
+        b = (np.dot(W[a-1], X[i]))
+        c = np.log(1+np.exp(np.dot(W[a-1], X[i])))
+        lh = a * b - c
+        # lh = a * (np.dot(W[a-1], X[i])) - np.log(1+np.exp(np.dot(W[a-1], X[i])))
         lh_sum += lh
     return lh_sum
 
@@ -113,34 +119,35 @@ for i in range(iter):
 
 
 a = make_pred(current_weights, X)
+print(a)
 
 
 
-for i in range(Y.shape[0]):
-    print("%.4f" % Y[i], end=" ")
-print()
+# for i in range(Y.shape[0]):
+#     print("%.4f" % Y[i], end=" ")
+# print()
 
-for i in range(Y.shape[0]):
-    print("%.4f" % a[0][i], end=" ")
-print()
-for i in range(Y.shape[0]):
-    print("%.4f" % a[1][i], end=" ")
-print()
-for i in range(Y.shape[0]):
-    print("%.4f" % a[2][i], end=" ")
+# for i in range(Y.shape[0]):
+#     print("%.4f" % a[0][i], end=" ")
+# print()
+# for i in range(Y.shape[0]):
+#     print("%.4f" % a[1][i], end=" ")
+# print()
+# for i in range(Y.shape[0]):
+#     print("%.4f" % a[2][i], end=" ")
 
-print()
-b = make_pred(current_weights, X_test)
+# print()
+# b = make_pred(current_weights, X_test)
 
-for i in range(Y_test.shape[0]):
-    print("%.4f" % Y_test[i], end=" ")
-print()
+# for i in range(Y_test.shape[0]):
+#     print("%.4f" % Y_test[i], end=" ")
+# print()
 
-for i in range(Y_test.shape[0]):
-    print("%.4f" % b[0][i], end=" ")
-print()
-for i in range(Y_test.shape[0]):
-    print("%.4f" % b[1][i], end=" ")
-print()
-for i in range(Y_test.shape[0]):
-    print("%.4f" % b[2][i], end=" ")
+# for i in range(Y_test.shape[0]):
+#     print("%.4f" % b[0][i], end=" ")
+# print()
+# for i in range(Y_test.shape[0]):
+#     print("%.4f" % b[1][i], end=" ")
+# print()
+# for i in range(Y_test.shape[0]):
+#     print("%.4f" % b[2][i], end=" ")
