@@ -20,9 +20,9 @@ X - an m x (n+1) training set without index or class columns, 1 based index,
 Y - an m x 1 vector(matrix) of true classifications for each example
 W - a k x (n+1) matrix of weights
 """
-iter = 1000
-eta = 0.1
-lambda_ = 0.01
+iter = 100
+eta = 0.01
+lambda_ = 0.001
 #load compressed training set
 train_sparse = sparse.load_npz(
     'Project_2/csr_train.csv_lg.npz')
@@ -66,8 +66,9 @@ print("X_test created")
 #training set without class columns
 X = sparse.csr_matrix(train_sparse[:, 0:-1])
 X[:,0] = np.ones(X.shape[0])
-X = X/1000
+# X = X/100
 X = X.toarray()
+print("X created")
 
 # X = sparse.csr_matrix(sparse.load_npz(
 #     'Project_2/csr_train.csv_lg_reduced.npz')).toarray()
@@ -170,6 +171,7 @@ def get_accuracy(predicted_class, target):
             correct += 1
     return correct/length
 
+''' ******************** Run this section to create weights *********************** '''
 
 weights = calculate_weights(W, X, Y)
 prediction = make_pred(weights, X)
@@ -179,4 +181,12 @@ accuracy = get_accuracy(predicted_class, Y)
 print_class_prediction(predicted_class, Y)
 print(accuracy)
 
-savetxt('weights.csv', weights, delimiter=',')
+# # Saves weights with name weights_'eta'_'lamda'_'iterations'.csv
+# savetxt('weights_'+ str(eta) +'_'+ str(lambda_) +'_'+ str(iter) +'.csv', weights, delimiter=',')
+
+''' ******************************************************************************* '''
+
+''' **** Run this section to get predictions and accuracy for existing weights **** '''
+
+
+''' ******************************************************************************* '''
