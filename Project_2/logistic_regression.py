@@ -25,14 +25,14 @@ eta = 0.1
 lambda_ = 0.01
 #load compressed training set
 train_sparse = sparse.load_npz(
-    '/home/michaelservilla/CS529/Project_2/csr_train.csv_sm.npz')
+    '/home/sin_nombre/CS529/Project_2/csr_train.csv_lg.npz')
 
 # print(train_sparse.shape)
 # print(train_sparse)
 
 #load compressed testing set
 test_sparse = sparse.load_npz(
-    '/home/michaelservilla/CS529/Project_2/csr_test.csv_sm.npz')
+    '/home/sin_nombre/CS529/Project_2/csr_test.csv_lg.npz')
 
 print(test_sparse.shape)
 print(test_sparse)
@@ -63,6 +63,7 @@ print(X_test)
 #training set without class columns
 X = sparse.csr_matrix(train_sparse[:, 0:-1])
 X = X.toarray()
+X = X/100
 for i in range(X.shape[0]):
     X[i][0] = 1
 
@@ -91,16 +92,16 @@ def make_pred(W, X_array):
 
 #makes conditional likelihood estimate
 def likelihood(W, X, Y):
-    savetxt('W.csv', W, delimiter=',')
-    savetxt('X.csv', X, delimiter=',')
-    savetxt('Y.csv', Y, delimiter=',')
+    # savetxt('W.csv', W, delimiter=',')
+    # savetxt('X.csv', X, delimiter=',')
+    # savetxt('Y.csv', Y, delimiter=',')
     lh_sum = 0
     for i in range(X.shape[0]):
         a = int((Y[i]))
-        b = np.dot(W[a-1], X[i])
-        c = np.log(1+np.exp(np.dot(W[a-1], X[i])))
-        lh = a * b - c
-        # lh = a * (np.dot(W[a-1], X[i])) - np.log(1+np.exp(np.dot(W[a-1], X[i])))
+        # b = np.dot(W[a-1], X[i])
+        # c = np.log(1+np.exp(np.dot(W[a-1], X[i])))
+        # lh = a * b - c
+        lh = a * (np.dot(W[a-1], X[i])) - np.log(1+np.exp(np.dot(W[a-1], X[i])))
         lh_sum += lh
     return lh_sum
 
@@ -112,14 +113,13 @@ current_weights = W.copy()
 
 #runs gradient ascent
 for i in range(iter):
-    predict = make_pred(W, X)
-    loss = delta - predict
-    dot_loss = np.dot(loss, X)
-    lambda_W = lambda_ * W
-    dot_loss_lambda_W = dot_loss - lambda_W
-    W = W + eta * (dot_loss - lambda_W)
-
-    # W = W + eta * (np.dot((delta - make_pred(W, X)), X) - (lambda_ * W))
+    # predict = make_pred(W, X)
+    # loss = delta - predict
+    # dot_loss = np.dot(loss, X)
+    # lambda_W = lambda_ * W
+    # dot_loss_lambda_W = dot_loss - lambda_W
+    # W = W + eta * (dot_loss - lambda_W)
+    W = W + eta * (np.dot((delta - make_pred(W, X)), X) - (lambda_ * W))
     lh_new = likelihood(W, X, Y)
     if lh_sum < lh_new:
         lh_sum = lh_new
@@ -128,35 +128,48 @@ for i in range(iter):
 
 
 a = make_pred(current_weights, X)
-print(a)
+# print(a)
 
 
 
-for i in range(Y.shape[0]):
-    print("%.4f" % Y[i], end=" ")
-print()
+# for i in range(Y.shape[0]):
+#     print("%.4f" % Y[i], end=" ")
+# print()
 
-for i in range(Y.shape[0]):
-    print("%.4f" % a[0][i], end=" ")
-print()
-for i in range(Y.shape[0]):
-    print("%.4f" % a[1][i], end=" ")
-print()
-for i in range(Y.shape[0]):
-    print("%.4f" % a[2][i], end=" ")
+# for i in range(Y.shape[0]):
+#     print("%.4f" % a[0][i], end=" ")
+# print()
+# for i in range(Y.shape[0]):
+#     print("%.4f" % a[1][i], end=" ")
+# print()
+# for i in range(Y.shape[0]):
+#     print("%.4f" % a[2][i], end=" ")
 
-print()
+# print()
 b = make_pred(current_weights, X_test)
 
-for i in range(Y_test.shape[0]):
-    print("%.4f" % Y_test[i], end=" ")
-print()
+accuracy = 0
+for i in range(b.shape[1]):
+    b_max = np.argmax(b, axis=0)
+    print(b_max)
+    print(int(Y_test[i]), b_max[i] + 1)
+    if int(Y_test[i]) == (b_max[i] + 1):
+        print('true')
+        accuracy += 1
+    else:
+        print('false')
 
-for i in range(Y_test.shape[0]):
-    print("%.4f" % b[0][i], end=" ")
-print()
-for i in range(Y_test.shape[0]):
-    print("%.4f" % b[1][i], end=" ")
-print()
-for i in range(Y_test.shape[0]):
-    print("%.4f" % b[2][i], end=" ")
+print("accuracy = ", str(accuracy/b.shape[1]))
+
+# for i in range(Y_test.shape[0]):
+#     print("%.4f" % Y_test[i], end=" ")
+# print()
+
+# for i in range(Y_test.shape[0]):
+#     print("%.4f" % b[0][i], end=" ")
+# print()
+# for i in range(Y_test.shape[0]):
+#     print("%.4f" % b[1][i], end=" ")
+# print()
+# for i in range(Y_test.shape[0]):
+#     print("%.4f" % b[2][i], end=" ")
