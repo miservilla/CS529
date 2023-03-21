@@ -21,8 +21,8 @@ Y - an m x 1 vector(matrix) of true classifications for each example
 W - a k x (n+1) matrix of weights
 """
 iter = 10
-eta = 0.1
-lambda_ = 0.01
+eta = 0.01
+lambda_ = 0.001
 #load compressed training set
 train_sparse = sparse.load_npz(
     '/home/sin_nombre/CS529/Project_2/csr_train.csv_lg.npz')
@@ -86,8 +86,7 @@ for i in range(Y.shape[0]):
 def make_pred(W, X_array):
     prediction = np.exp(np.dot(W,np.transpose(X_array)))
     prediction[k-1, :] = 1
-    pt = np.transpose(prediction)
-    prediction = np.transpose(pt/pt.sum(axis=1)[:, None])
+    prediction = prediction/prediction.sum(0)
     return prediction
 
 #makes conditional likelihood estimate
