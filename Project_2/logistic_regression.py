@@ -129,6 +129,8 @@ for i in range(iter):
     # print(count, lh_sum, difference)
     print(count, lh_sum)
 
+savetxt('logistic_regression_wts.csv', current_weights, delimiter=",")
+
 a = make_pred(current_weights, X)
 
 b = make_pred(current_weights, X_test)
