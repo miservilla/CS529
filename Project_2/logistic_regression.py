@@ -6,6 +6,7 @@ from numpy import asarray
 from numpy import savetxt
 from numpy import loadtxt
 import math
+import time
 
 """
 k - number of classes in training set
@@ -20,9 +21,10 @@ X - an m x (n+1) training set without index or class columns, 1 based index,
 Y - an m x 1 vector(matrix) of true classifications for each example
 W - a k x (n+1) matrix of weights
 """
-iter = 1000000
-eta = 0.01
-lambda_ = 0.01
+start_time = time.time()
+iter = 10000
+eta = 0.1
+lambda_ = 0.1
 #load compressed training set
 train_sparse = sparse.load_npz(
     '/home/michaelservilla/CS529/Project_2/csr_train.csv_lg.npz')
@@ -56,7 +58,7 @@ X_test = sparse.csr_matrix(test_sparse[:, 0:-1])
 X_test = X_test.toarray()
 for i in range(X_test.shape[0]):
     X_test[i][0] = 1
-#nomralizing X_test
+#normalizing X_test
 X_sum = X_test.sum(0)
 X_sum = np.where(X_sum == 0, 1, X_sum)
 X_test = X_test/X_sum
@@ -117,15 +119,15 @@ count = 0
 for i in range(iter):
     W = W + eta * (np.dot((delta - make_pred(W, X)), X) - (lambda_ * W))
     lh_new = likelihood(W, X, Y)
-    difference = abs(lh_new - lh_sum)
-    if difference < 0.00001:
-        break
+    # difference = abs(lh_new - lh_sum)
+    # if difference < 0.00001:
+    #     break
     if lh_sum < lh_new:
         lh_sum = lh_new
         current_weights = W.copy()
     count += 1
-    print(count, lh_sum, difference)
-
+    # print(count, lh_sum, difference)
+    print(count, lh_sum)
 
 a = make_pred(current_weights, X)
 
@@ -138,3 +140,4 @@ for i in range(b.shape[1]):
         accuracy += 1
 
 print("accuracy = ", str(accuracy/b.shape[1]))
+print("--- %s seconds ---" % (time.time() - start_time))
