@@ -20,7 +20,7 @@ X - an m x (n+1) training set without index or class columns, 1 based index,
 Y - an m x 1 vector(matrix) of true classifications for each example
 W - a k x (n+1) matrix of weights
 """
-iter = 10
+iter = 1000000
 eta = 0.01
 lambda_ = 0.01
 #load compressed training set
@@ -113,13 +113,18 @@ lh_sum = likelihood(W, X, Y)
 current_weights = W.copy()
 
 #runs gradient ascent
+count = 0
 for i in range(iter):
     W = W + eta * (np.dot((delta - make_pred(W, X)), X) - (lambda_ * W))
     lh_new = likelihood(W, X, Y)
+    difference = abs(lh_new - lh_sum)
+    if difference < 0.00001:
+        break
     if lh_sum < lh_new:
         lh_sum = lh_new
         current_weights = W.copy()
-    print(lh_sum)
+    count += 1
+    print(count, lh_sum, difference)
 
 
 a = make_pred(current_weights, X)
