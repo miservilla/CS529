@@ -14,7 +14,7 @@ from sklearn.model_selection import train_test_split
 # train = genfromtxt(
 #     '/home/michaelservilla/CS529/Project_2/framingham.csv', delimiter=',')
 test = genfromtxt(
-    'Project_2/testing.csv', delimiter=',')
+    '/home/michaelservilla/CS529/Project_2/testing.csv', delimiter=',')
 # train = np.delete(train,0,1)
 # print("Train before split")
 # print(train)
@@ -53,5 +53,5 @@ print(test_sparse.shape)
 
 # sparse.save_npz('/home/michaelservilla/CS529/Project_2/csr_train.csv_CAD.npz', train_sparse)
 sparse.save_npz(
-    'Project_2/csr_test.csv_kaggle.npz', test_sparse)
+    '/home/michaelservilla/CS529/Project_2/csr_test.csv_kaggle.npz', test_sparse)
 # train_sparse = sparse.load_npz('/home/michaelservilla/CS529/Project_2/csr_train.csv.npz')
