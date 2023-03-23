@@ -27,7 +27,7 @@ End of global variables
 get_results returns a list of predicted target values as well as a list of the 
 true target values if the test data provides it
 '''
-def get_results(test_np, lh_np, prior, true_targets_exist):
+def get_predictions(test_np, lh_np, prior, true_targets_exist):
 
     # print()
     # print(lh_np[0][0:4])
@@ -104,7 +104,7 @@ test_np = np.delete(test_np, 0, 1)  # Delete 1st column (index)
 
 if not run_loop:
     # Getting predictions for the test data 
-    result,y = get_results(test_np, lh_np, prior, true_targets)
+    result,y = get_predictions(test_np, lh_np, prior, true_targets)
     savetxt('Project_2/NB_result.csv', result, delimiter=',', header='predictions', 
            fmt ='% s')
     if true_targets:
@@ -136,7 +136,7 @@ else:
         # print()
         # print(beta_MAP_MLE[0][0:4])
 
-        beta_result,beta_y = get_results(test_np, beta_MAP_MLE, beta_prior, true_targets)
+        beta_result,beta_y = get_predictions(test_np, beta_MAP_MLE, beta_prior, true_targets)
 
         if true_targets:
             beta_accuracy = get_accuracy(test_np, beta_result, beta_y)
