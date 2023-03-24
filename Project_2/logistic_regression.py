@@ -23,8 +23,8 @@ W - a k x (n+1) matrix of weights
 """
 start_time = time.time()
 iter = 10000
-eta = 0.01
-lambda_ = 0.01
+eta = 0.001
+lambda_ = 0.001
 #load compressed training set
 train_sparse = sparse.load_npz(
     '/home/michaelservilla/CS529/Project_2/csr_train.csv_lg.npz')
