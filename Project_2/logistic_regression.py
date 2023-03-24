@@ -22,19 +22,19 @@ Y - an m x 1 vector(matrix) of true classifications for each example
 W - a k x (n+1) matrix of weights
 """
 start_time = time.time()
-iter = 10000
+iter = 1
 eta = 0.001
 lambda_ = 0.001
 #load compressed training set
 train_sparse = sparse.load_npz(
-    '/home/michaelservilla/CS529/Project_2/csr_train.csv_lg.npz')
+    '/home/michaelservilla/CS529/Project_2/csr_train.csv_sm.npz')
 
 # print(train_sparse.shape)
 # print(train_sparse)
 
 #load compressed testing set
 test_sparse = sparse.load_npz(
-    '/home/michaelservilla/CS529/Project_2/csr_test.csv_lg.npz')
+    '/home/michaelservilla/CS529/Project_2/csr_test.csv_sm.npz')
 
 print(test_sparse.shape)
 print(test_sparse)
@@ -86,7 +86,7 @@ n = X.shape[1]
 #initialize weight matrix with zeros
 W = np.zeros((k, n), dtype=float)
 
-#making delta array with Y, all 0 except indecies with value (1, 2, or 3)
+#delta array with Y, all 0 except indices with values of target (one hot encoding)
 delta = np.zeros((k, X.shape[0]), dtype=int)
 for i in range(Y.shape[0]):
     row = Y[i]

@@ -29,6 +29,18 @@ accuracy = [0.7783333333,
             0.76625,
             0.78125]
 
+iterations = [10000,
+              1000,
+              100,
+              10,
+              1]
+
+accuracy_2d = [0.78125,
+               0.78625,
+               0.78875,
+               0.7854166667,
+               0.7833333333]
+
 fig = plt.figure()
 ax = fig.add_subplot( projection='3d')
 ax.scatter(eta, lambda_, zs=accuracy, s=200, label='True Position')
@@ -49,5 +61,10 @@ plt.yticks(fontsize=14)
 for t in ax.zaxis.get_major_ticks():
     t.label.set_fontsize(14)
 
+fig_2d, ax = plt.subplots()
+ax.plot(iterations, accuracy_2d, 'o-')
+
+ax.set(xlabel='iterations', ylabel='accuracy')
+ax.grid()
 
 plt.show()
