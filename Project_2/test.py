@@ -15,7 +15,7 @@ Adjust these global variables for specific training set:
 '''
 run_loop = False # Set to false so that results and accuracy is found for the single beta value
 
-plot_results = False # Set to true to plot results (single beta value will plot true target vs
+plot_results = True # Set to true to plot results (single beta value will plot true target vs
 # predicted target)
 
 true_targets = True # Set to true if the test data set has the true target values in the last column
@@ -27,7 +27,7 @@ End of global variables
 get_results returns a list of predicted target values as well as a list of the 
 true target values if the test data provides it
 '''
-def get_predictions(test_np, lh_np, prior, true_targets_exist):
+def get_predictions(test_np, lh_np, prior, true_targets_exist, test_submission):
 
     # print()
     # print(lh_np[0][0:4])
@@ -43,10 +43,9 @@ def get_predictions(test_np, lh_np, prior, true_targets_exist):
 
     for i in range(test_np_len):
         a = test_np[i]
-        b = (a * lh_np)
         e = []
         for j in range(lh_np.shape[0]):
-            x = b[j] # Setting x to list of MAP values for current news group
+            x = lh_np[j] # Setting x to list of MAP values for current news group
             x = np.log2(x, out=np.zeros_like(x), where=(x!=0)) # Taking the log_base2 of all x (MAP) values
             c = np.dot(a,x) # Taking dot product of test word set (test_np[i]) and x 
             d = (np.log2(prior[j]) + c) # Adding c to to log_base2 of current news group's prior 
@@ -54,11 +53,16 @@ def get_predictions(test_np, lh_np, prior, true_targets_exist):
         # print(e)
         # print()
         result.append(np.argmax(e))
+        # test_submission[i,1] = np.argmax(e)
         del e
 
     result = np.array(result)
     for i in range(len(result)):
         result[i] = result[i] + 1
+        # test_submission[i,1] = test_submission[i,1] + 1
+
+    # savetxt('Project_2/NB_result.csv', test_submission, delimiter=',', header='id, class', 
+    #        fmt ='% s')
 
     # print("y values")
     # print(y.shape)
@@ -100,12 +104,14 @@ lh_np = np.delete(lh_np, lh_np.shape[1] - 1, 1) # List of MAP values for each ne
 test_sparse = sparse.load_npz('Project_2/csr_test.csv_lg.npz')
 test = sparse.csr_matrix(test_sparse)
 test_np = csr_matrix.toarray(test)
+test_submission = np.zeros((test_np.shape[0],2), dtype=int)
+test_submission[:,0] = test_np[:,0]
 test_np = np.delete(test_np, 0, 1)  # Delete 1st column (index)
 
 if not run_loop:
     # Getting predictions for the test data 
-    result,y = get_predictions(test_np, lh_np, prior, true_targets)
-    savetxt('Project_2/NB_result.csv', result, delimiter=',', header='predictions', 
+    result,y = get_predictions(test_np, lh_np, prior, true_targets, test_submission)
+    savetxt('Project_2/just_results.csv', result, delimiter=',', header='class', 
            fmt ='% s')
     if true_targets:
         # Getting the accuracy of the test data set's predictions
@@ -121,7 +127,10 @@ if not run_loop:
             plt.scatter(result, y, s=s)
             plt.locator_params(axis="both", integer=True, tight=True)
             plt.ylim(0,lh_np.shape[0] + 1)
-            plt.xlim(0,result.shape[0] + 1)
+            plt.xlim(0,lh_np.shape[0] + 1)
+            plt.title("True vs Perdicted Values")
+            plt.xlabel("Perdicted Target Values")
+            plt.ylabel("True Target Value")
             plt.show()
 
 else: 
@@ -136,7 +145,7 @@ else:
         # print()
         # print(beta_MAP_MLE[0][0:4])
 
-        beta_result,beta_y = get_predictions(test_np, beta_MAP_MLE, beta_prior, true_targets)
+        beta_result,beta_y = get_predictions(test_np, beta_MAP_MLE, beta_prior, true_targets, None)
 
         if true_targets:
             beta_accuracy = get_accuracy(test_np, beta_result, beta_y)
@@ -149,6 +158,9 @@ else:
         # print(x)
         plt.plot(x,beta_test_results)
         plt.xscale("log")
+        plt.title("Changes in Accuracy Caused by Beta")
+        plt.xlabel("Accuracy")
+        plt.ylabel("Beta Value")
         plt.show()
 
 
