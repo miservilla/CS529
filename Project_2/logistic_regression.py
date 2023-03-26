@@ -1,5 +1,7 @@
 from scipy.sparse import csr_matrix
 from scipy import sparse
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
 import numpy as np
 from numpy import genfromtxt
 from numpy import asarray
@@ -14,17 +16,17 @@ n - number of attributes (features or columns) each example (document or row)
     has
 eta - the learning rate or step size
 lambda_ - the penalty term used in regularization
-delta - a k x m matrix where delta_ji = 1 if jth training value, Y^i = y_j and 
+delta - a k * m matrix where delta_ji = 1 if jth training value, Y^i = y_j and 
         delta_ji = 0 otherwise
-X - an m x (n+1) training set without index or class columns, 1 based index,
+X - an m * (n+1) training set without index or class columns, 1 based index,
     m is rows in training set
-Y - an m x 1 vector(matrix) of true classifications for each example
-W - a k x (n+1) matrix of weights
+Y - an m * 1 vector(matrix) of true classifications for each example
+W - a k * (n+1) matrix of weights
 """
 start_time = time.time()
-iter = 10000
-eta = 0.01
-lambda_ = 0.01
+iter = 1
+eta = 0.001
+lambda_ = 0.001
 #load compressed training set
 train_sparse = sparse.load_npz(
     '/home/michaelservilla/CS529/Project_2/csr_train.csv_lg.npz')
@@ -86,7 +88,7 @@ n = X.shape[1]
 #initialize weight matrix with zeros
 W = np.zeros((k, n), dtype=float)
 
-#making delta array with Y, all 0 except indecies with value (1, 2, or 3)
+#delta array with Y, all 0 except cells with values of target (one hot encoding)
 delta = np.zeros((k, X.shape[0]), dtype=int)
 for i in range(Y.shape[0]):
     row = Y[i]
@@ -136,10 +138,25 @@ a = make_pred(current_weights, X)
 b = make_pred(current_weights, X_test)
 
 accuracy = 0
+Y_true = []
+for i in range(Y_test.shape[0]):
+    Y_true.append(int(Y_test[i]))
+
 for i in range(b.shape[1]):
     b_max = np.argmax(b, axis=0)
     if int(Y_test[i]) == (b_max[i] + 1):
         accuracy += 1
+
+Y_pred = b_max.tolist()
+Y_pred = [x + 1 for x in Y_pred]
+cm = confusion_matrix(Y_true, Y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+disp.plot()
+
+plt.xlabel('Y predicted values')
+plt.ylabel('Y true values')
+plt.show()
+
 
 print("accuracy = ", str(accuracy/b.shape[1]))
 print("--- %s seconds ---" % (time.time() - start_time))
