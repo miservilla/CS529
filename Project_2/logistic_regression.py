@@ -36,7 +36,7 @@ train_sparse = sparse.load_npz(
 
 #load compressed testing set
 test_sparse = sparse.load_npz(
-    '/home/michaelservilla/CS529/Project_2/csr_test.csv_lg.npz')
+    '/home/michaelservilla/CS529/Project_2/csr_test.csv.npz')
 
 print(test_sparse.shape)
 print(test_sparse)

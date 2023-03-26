@@ -64,7 +64,8 @@ for t in ax.zaxis.get_major_ticks():
 fig_2d, ax = plt.subplots()
 ax.plot(iterations, accuracy_2d, 'o-')
 
-ax.set(xlabel='iterations', ylabel='accuracy')
+ax.set_xlabel(xlabel='Iterations', fontsize = 16)
+ax.set_ylabel(ylabel='Accuracy', fontsize=16)
 ax.grid()
 
 plt.show()

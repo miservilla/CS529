@@ -13,7 +13,7 @@ import math
 
 
 train_sparse = sparse.load_npz(
-    'Project_2/csr_train.csv_lg.npz')
+    '/home/michaelservilla/CS529/Project_2/csr_train.csv_lg.npz')
 
 target_column = 61189
 not_an_attribute = [0, 61189]
