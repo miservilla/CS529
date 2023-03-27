@@ -12,7 +12,7 @@ import math
 
 
 train_sparse = sparse.load_npz(
-    'csr_train.csv_lg.npz')
+    '/home/michaelservilla/CS529/Project_2/csr_train.csv_lg.npz')
 
 # Traing data as sparse matrix
 X = sparse.csr_matrix(train_sparse)
@@ -81,12 +81,12 @@ for i in range(1, unique_targets+1):
 # print(newsgroup_percents)
 # print()
 
-occurance = 1
+occurence = 100
 maxValues = np.amax(newsgroup_percents, axis=0)  
 X_sum_small = X_sum[0:-1]
 X_sum_small = X_sum_small[1:]  
 # print(X_sum_small) 
-maxValues = np.where(X_sum_small <= occurance, 0, maxValues) 
+maxValues = np.where(X_sum_small <= occurence, 0, maxValues) 
 
 # print(maxValues)
 

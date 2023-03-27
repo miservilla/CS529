@@ -2,6 +2,22 @@
 
 - make_sparse.py
 
+## Description
+
+Uses scipy library to compress sparse csv data files in a .npz format. For train
+data, after compression will split into 20:80 test train files, and then save to
+disk. Can also use to create compresed .npz test data for actual predictions.
+
+## Usage
+
+### make_sparse.py
+
+Enter file path of training data to create train file. Enter file paths for 
+saving both the training and testing files. To create test prediction compressed
+.npz file, comment out all of the current uncommented lines and uncomment the
+current commented lines. Enter file path for both creating and saving the
+prediction file.
+
 # Naive Bayes
 
 - main.py
@@ -63,6 +79,32 @@ After parameters are correctly set simply running test.py will produce and save 
 
 - logistic_regression.py
 
+## Description
+
+Runs logistic regression algorithm for text classification.
+
+## Usage
+
+### logistic_regression.py
+
+```python
+
+Add file path to train_sparse
+# load compressed training set
+train_sparse = sparse.load_npz(
+    'file path to save file/csr_train.csv.npz')
+
+Add file path to test_sparse
+#load compressed testing set
+test_sparse = sparse.load_npz(
+    'file path to save file/csr_test.csv.npz')
+
+Add file path to save adjusted weights
+# to save current adjusted weights
+savetxt('file path to save file/logistic_regression_wts.csv',
+        current_weights, delimiter=",")
+
+```
 
 # Questions 6 & 7
 

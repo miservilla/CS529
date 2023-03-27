@@ -29,14 +29,14 @@ eta = 0.001
 lambda_ = 0.001
 #load compressed training set
 train_sparse = sparse.load_npz(
-    '/home/michaelservilla/CS529/Project_2/csr_train.csv_lg.npz')
+    'file path to save file/csr_train.csv.npz')
 
 # print(train_sparse.shape)
 # print(train_sparse)
 
 #load compressed testing set
 test_sparse = sparse.load_npz(
-    '/home/michaelservilla/CS529/Project_2/csr_test.csv.npz')
+    'file path to save file/csr_test.csv.npz')
 
 print(test_sparse.shape)
 print(test_sparse)
@@ -130,7 +130,9 @@ for i in range(iter):
     # print(count, lh_sum, difference)
     print(count, lh_sum)
 
-savetxt('logistic_regression_wts.csv', current_weights, delimiter=",")
+# to save current adjusted weights
+savetxt('file path to save file/logistic_regression_wts.csv',
+        current_weights, delimiter=",")
 
 a = make_pred(current_weights, X)
 
