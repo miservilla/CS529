@@ -57,7 +57,7 @@ beta_MAP_MLE = loadtxt(' Path to folder containing set of matrices +  /beta_'+st
 
  
 ```
-After parameters are correctly set simply running test.py will produce and save a file of the results and sgow plots if set to do so. Note: you may also change where the results file is being saved to, otherwise it will use the defualt. There are also settings to save a file meant for the kaggle competition however these are currently commented out.
+After parameters are correctly set simply running test.py will produce and save a file of the results and show plots if set to do so. Note: you may also change where the results file is being saved to, otherwise it will use the defualt. There are also settings to save a file meant for the kaggle competition however these are currently commented out.
 
 # Logistice Regression
 
