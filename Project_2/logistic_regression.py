@@ -71,7 +71,6 @@ print(X_test)
 #training set without class columns
 X = sparse.csr_matrix(train_sparse[:, 0:-1])
 X = X.toarray()
-# X = X/100
 for i in range(X.shape[0]):
     X[i][0] = 1
 #nomralizing X
