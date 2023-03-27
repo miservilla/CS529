@@ -12,12 +12,48 @@ disk. Can also use to create compresed .npz test data for actual predictions.
 
 ### make_sparse.py
 
+```python
+
+Enter file path to sparse csv file, comment out if compressing sparse csv 
+prediction file
+# enter train csv file path
+train = genfromtxt(
+    'file path for training data in sparse csv format', delimiter=',')
+
+Enter file path to save the train and test files, comment out if compressing 
+sparse csv prediction file
+# enter file path to save the train and test files
+sparse.save_npz(
+    'file path to save file/csr_train.csv.npz', train_sparse)
+sparse.save_npz(
+    'file path to save file/csr_test.csv.npz', test_sparse)
+
+#comment out below if compressiong prediction file
+split = round(len(train) * 0.80)
+indices = np.random.permutation(train.shape[0])
+training_idx, test_idx = indices[:split], indices[split:]
+train, test = train[training_idx, :], train[test_idx, :]
+train_sparse = csr_matrix(train, dtype=np.int16)
+test_sparse = csr_matrix(test, dtype=np.int16)
+
+Uncomment to compress sparse csv prediction file 
+# prediction = genfromtxt(
+#     'file path for test (prediction) data in sparse csv format', 
+# delimiter=',')
+
+# prediction_sparse = csr_matrix(prediction, dtype=np.int16)
+
+# sparse.save_npz(
+#     'file path to save file/csr_prediction.csv.npz',
+#     prediction_sparse)
+
 Enter file path of training data to create train file. Enter file paths for 
 saving both the training and testing files. To create test prediction compressed
 .npz file, comment out all of the current uncommented lines and uncomment the
 current commented lines. Enter file path for both creating and saving the
 prediction file.
 
+```
 # Naive Bayes
 
 - main.py
@@ -89,17 +125,17 @@ Runs logistic regression algorithm for text classification.
 
 ```python
 
-Add file path to train_sparse
+Enter file path to train_sparse
 # load compressed training set
 train_sparse = sparse.load_npz(
     'file path to save file/csr_train.csv.npz')
 
-Add file path to test_sparse
+Enter file path to test_sparse
 #load compressed testing set
 test_sparse = sparse.load_npz(
     'file path to save file/csr_test.csv.npz')
 
-Add file path to save adjusted weights
+Enter file path to save adjusted weights
 # to save current adjusted weights
 savetxt('file path to save file/logistic_regression_wts.csv',
         current_weights, delimiter=",")
