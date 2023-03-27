@@ -161,6 +161,8 @@ by q6_and_q7.py. This method works to get the information gain for each word how
 
 train_sparse = sparse.load_npz('Put path to training .npz file here') 
 
+words = np.loadtxt("path to vocabulary .txt file", dtype=str)
+
 occurrence = int # Set to the desired minimum word usage  
  
 ```
