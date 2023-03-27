@@ -12,7 +12,7 @@ import math
 
 
 train_sparse = sparse.load_npz(
-    'csr_train.csv_sm.npz')
+    'csr_train.csv_lg.npz')
 
 # Traing data as sparse matrix
 X = sparse.csr_matrix(train_sparse)
@@ -40,7 +40,7 @@ X_sum = X.sum(0)
 X_sum2 = np.where(X_sum == 0, 1, X_sum)
 X = X/X_sum2
 X[:,X.shape[1]-1] = np.transpose(train_sparse[:,X.shape[1]-1].toarray())
-print(X)
+# print(X)
 
 df = pd.DataFrame(columns=['index', 'class_id'])
 
@@ -57,7 +57,7 @@ sparse_classes = {} # Dictionary of sparse matrix for each newsgroup
 for dataframe in dataframes:
     print()
     print("Class:" + str(dataframes[dataframe].iloc[0]['class_id']))
-    print("Size: " + str(len(dataframes[dataframe])))
+    # print("Size: " + str(len(dataframes[dataframe])))
     # print(dataframes[dataframe])
 
     yk_docs_cnt = len(dataframes[dataframe])
@@ -71,31 +71,41 @@ for dataframe in dataframes:
     # Deleting 1st and last column as they are index and news groups (not words)
     sparse_classes[index] = np.delete(sparse_classes[index], 0)
     sparse_classes[index] = np.delete(sparse_classes[index], v_total)
-    print(sparse_classes[index])
+    # print(sparse_classes[index])
 
 newsgroup_percents = np.zeros(shape=(unique_targets,v_total))
 for i in range(1, unique_targets+1):
     newsgroup_percents[i-1,:] = sparse_classes[str(i)+".0"]
 
-print()
-print(newsgroup_percents)
-print()
+# print()
+# print(newsgroup_percents)
+# print()
 
 occurance = 1
 maxValues = np.amax(newsgroup_percents, axis=0)  
 X_sum_small = X_sum[0:-1]
 X_sum_small = X_sum_small[1:]  
-print(X_sum_small) 
+# print(X_sum_small) 
 maxValues = np.where(X_sum_small <= occurance, 0, maxValues) 
 
-print(maxValues)
+# print(maxValues)
 
-max_100 =  np.argpartition(maxValues,-15)[-15:]
+max_100 =  np.argpartition(maxValues,-100)[-100:]
 max_100 = max_100[np.argsort(maxValues[max_100])]
 max_100 = max_100[::-1]
 
-print("X created")
-print(max_100)
+print("max_100 created")
+# print(max_100)
 
-savetxt('max_100_words_meth2.csv', max_100, delimiter=',', 
+words = np.loadtxt("vocabulary.txt", dtype=str)
+# print(words)
+
+max_100_words = []
+
+for i in range(len(max_100)):
+    max_100_words.append(words[max_100[i]])
+
+print(max_100_words)
+
+savetxt('max_100_words_meth2.csv', max_100_words, delimiter=',', 
            fmt ='% s')
