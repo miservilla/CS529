@@ -20,6 +20,7 @@ prediction file
 train = genfromtxt(
     'file path for training data in sparse csv format', delimiter=',')
 
+
 Enter file path to save the train and test files, comment out if compressing 
 sparse csv prediction file
 # enter file path to save the train and test files
