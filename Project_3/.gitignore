@@ -1,0 +1,7 @@
+*.png
+*.zip
+cifar_10/**
+data/**
+test/**
+train/**
+plants/**
