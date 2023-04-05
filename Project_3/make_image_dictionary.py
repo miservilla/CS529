@@ -9,10 +9,12 @@ import cv2
 from PIL import Image
 import datasets
 
-rootdir = '/home/michaelservilla/tmp/data'
-train = []
+rootdir = '/home/michaelservilla/CS529/Project_3/train'
+train_small = []
+bad = []
 count = 0
 feature = datasets.Image(decode=False)
+size = (32, 32)
 
 for subdir, dirs, files in os.walk(rootdir):
     for file in files:
@@ -20,30 +22,37 @@ for subdir, dirs, files in os.walk(rootdir):
         path = subdir + '/' + file
         dir = subdir.split('/')[-1]
         img = Image.open(path)
+        # img = img.resize((32, 32))
+        img.save(path)
+        w, h = img.size
+        if w != h:
+            print(path)
+            print(w, h)
+            print()
         new_img = {'img': feature.encode_example(img)}
         # img = cv2.imread(path)
         # cv2.imshow('OutputImage', img)
         # cv2.waitKey(0)
-        train.append([new_img,dir])
-        print(count)
+        train_small.append([new_img,dir])
+        print(count, w, h)
 
-print(train)
+# print(train_small)
 
 # for i, j in train.items():
 #     print(i, j)
 
-train = pd.DataFrame(train, columns=['img', 'label'])
-print(train)
+train_small = pd.DataFrame(train_small, columns=['img', 'label'])
+print(train_small)
 
 # plants = ds.dataset(pa.Table.from_pandas(train))
 
-print(train)
 # plants.save_to_disk('plants')
 # print(plants)
 
-hg_plants = Dataset(pa.Table.from_pandas(train))
-print(hg_plants)
-hg_plants.save_to_disk('plants')
+# hg_plants_small = ds.dataset(pa.Table.from_pandas(train_small).to_batches())
+# # print(type(hg_plants_small))
+
+# hg_plants_small.save_to_disk('plants_small')
 
 # df_train, df_test = train_test_split(train, test_size=0.2)
 

@@ -1,5 +1,6 @@
 *.png
 *.zip
+*.csv
 cifar_10/**
 data/**
 test/**
