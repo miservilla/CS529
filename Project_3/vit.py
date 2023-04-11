@@ -73,6 +73,12 @@ def transformer_encoder(x, cf):
     x = LayerNormalization()(x)
     x = mlp(x, cf)
     x = Add()([x, skip_2])
+    skip_3 = x
+    x = LayerNormalization()(x)
+    x = MultiHeadAttention(
+        num_heads=cf['num_heads'], key_dim=cf['hidden_dim']
+    )(x, x)
+    x = Add()([x, skip_3])
     return x
 
 
